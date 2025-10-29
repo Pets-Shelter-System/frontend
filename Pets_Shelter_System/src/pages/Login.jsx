@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const INPUT_CLASS =
-  "w-full border border-[#717070] rounded-[10px] px-4 py-2 text-sm text-[#999999] focus:outline-none focus:ring-0 focus:border-[#717070]";
+  "w-full border border-[#717070] rounded-[10px] px-4 py-2  my-2 text-sm text-[#999999] focus:outline-none focus:ring-0 focus:border-[#717070]";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -56,7 +56,8 @@ const Login = () => {
 
       {error && <p className="text-red-500 text-xs text-center mb-2">{error}</p>}
 
-      <form onSubmit={handleSubmit} className="flex flex-col space-y-5">
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-2">
+        <label className="text-sm font-semibold text-gray-700 my-0">Email</label>
         <input
           type="email"
           name="email"
@@ -65,9 +66,11 @@ const Login = () => {
           onChange={handleChange}
           className={INPUT_CLASS}
           required
+          
         />
 
         <div className="relative">
+          <label className="text-sm font-semibold text-gray-700"> Password</label>
           <input
             type={showPassword ? "text" : "password"}
             name="password"
@@ -81,7 +84,7 @@ const Login = () => {
             className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
             onClick={() => setShowPassword(!showPassword)}
           >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
+            {/* {showPassword ? <FaEyeSlash /> : <FaEye />} */}
           </span>
         </div>
 
