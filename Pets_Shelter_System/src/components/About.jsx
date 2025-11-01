@@ -30,10 +30,18 @@ const About = () => {
       </div>
 
       <div className="max-w-lg text-center md:text-left ">
-        <h2 className="text-3xl font-bold text-[#011749] mb-4">
+       <div className="flex">
+         <h2 className="text-3xl font-bold text-[#011749] mb-4">
           About Petopia
         </h2>
-
+<span
+                role="img"
+                aria-label="paw-icon"
+                className="text-orange-500 text-3xl"
+              >
+                🐾
+              </span>
+       </div>
         <p className="text-[#87898C] leading-relaxed ">
           Welcome to Petopia — a place where compassion meets care.
           Our mission is to rescue abandoned animals, provide them with proper

@@ -20,4 +20,5 @@ input:-webkit-autofill:focus {
 
 body {
   @apply font-sans;
+  overflow-x: hidden;
 }
