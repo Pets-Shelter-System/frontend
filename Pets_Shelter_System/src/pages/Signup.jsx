@@ -14,7 +14,7 @@ const Signup = () => {
     userName: "",
     email: "",
     password: "",
-    passwordConfirm: "",
+    confirmPassword: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +30,7 @@ const Signup = () => {
     e.preventDefault();
     setError("");
 
-    if (formData.password !== formData.passwordConfirm) {
+    if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match!");
       return;
     }
@@ -42,7 +42,7 @@ const Signup = () => {
         userName: formData.userName,
         email: formData.email,
         password: formData.password,
-        passwordConfirm: formData.passwordConfirm,
+        confirmPassword: formData.confirmPassword,
       });
 
       if (res.data?.isAuthenticated) {
@@ -56,6 +56,7 @@ const Signup = () => {
       }
     } catch (err) {
       console.error(err);
+      console.log(err.response?.data);
       setError(err.response?.data?.message || "Signup failed!");
     }
   };
@@ -118,7 +119,6 @@ const Signup = () => {
       />
     </div>
 
-    {/* Password */}
     <div className="relative">
       <input
         name="password"
@@ -137,13 +137,12 @@ const Signup = () => {
       </span>
     </div>
 
-    {/* Confirm Password */}
     <div className="relative">
       <input
-        name="passwordConfirm"
+        name="confirmPassword"
         type={showConfirm ? "text" : "password"}
         placeholder="Confirm password"
-        value={formData.passwordConfirm}
+        value={formData.confirmPassword}
         onChange={handleChange}
         className={INPUT_CLASS + " py-2 text-sm"}
         required

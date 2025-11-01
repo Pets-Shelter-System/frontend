@@ -7,7 +7,8 @@ export default {
         "login-btn": "#E7A01C",
       },
       fontFamily: {
-        sans: ["Poppins", "sans-serif"],
+        poppins: ["Poppins", "sans-serif"],
+        baloo: ["Baloo 2", "cursive"],
       },
     },
   },
