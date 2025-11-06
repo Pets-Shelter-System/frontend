@@ -36,7 +36,6 @@ export default function Recommended() {
       alt="product"
     />
 
-    {/* الطبقة السوداء + الزرار */}
     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex justify-center items-center">
       <button className="bg-white text-[#011749] font-semibold px-4 py-2 rounded-full hover:scale-105 transition">
         Get
