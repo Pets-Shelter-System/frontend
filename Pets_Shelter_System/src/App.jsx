@@ -5,18 +5,17 @@ import Signup from "./pages/Signup";
 import Layout from "./components/Layout";
 import AuthLayout from "./components/AuthLayout";
 import Shop from "./pages/Shop";
+import ProductDetails from "./pages/ProductDetails";
+
 function App() {
   return (
     <Routes>
-      {/* ✅ الصفحات العادية فيها ناف و فوتر */}
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
-
-        {/* ✅ صفحة الشوب */}
         <Route path="shop" element={<Shop />} />
+        <Route path="shop/product/:id" element={<ProductDetails />} />
       </Route>
 
-      {/* ✅ صفحات الـAuth */}
       <Route
         path="/login"
         element={

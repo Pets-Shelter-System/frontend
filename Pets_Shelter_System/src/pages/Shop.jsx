@@ -6,6 +6,7 @@ import { LuFilter, LuSlidersHorizontal } from "react-icons/lu";
 import SearchBar from "../components/SearchBar";
 import FilterPopup from "../components/FilterPopup";
 import Pagination from "../components/Pagination";
+import { useNavigate } from "react-router-dom"; // ✅ تم الاستيراد
 
 const Shop = () => {
   const [allProducts, setAllProducts] = useState([]);
@@ -23,6 +24,12 @@ const Shop = () => {
   const [tempCategories, setTempCategories] = useState([]);
 
   const pageSize = 12;
+
+  const navigate = useNavigate(); 
+
+  const handleProductClick = (id) => {
+    navigate(`/shop/product/${id}`);
+  };
 
   const toggleValue = (value, list, setList) => {
     setList(
@@ -84,13 +91,10 @@ const Shop = () => {
 
   return (
     <div className="px-4 md:px-10 lg:px-20 py-28">
-
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-
         <SearchBar search={search} setSearch={setSearch} />
 
         <div className="flex items-center gap-3">
-
           <button
             onClick={() => {
               setTempTypes(selectedTypes);
@@ -131,7 +135,6 @@ const Shop = () => {
               </button>
             </div>
           </div>
-
         </div>
       </div>
 
@@ -187,8 +190,9 @@ const Shop = () => {
             </div>
 
             <img
+              onClick={() => handleProductClick(product.id)}
               src={`http://petmarket.runasp.net${product.photos[0]?.imageName}`}
-              className="rounded-lg h-80 w-full object-cover mb-4"
+              className="rounded-lg h-80 w-full object-cover mb-4 cursor-pointer"
               alt={product.name}
             />
 
@@ -207,7 +211,6 @@ const Shop = () => {
       </div>
 
       <Pagination page={page} setPage={setPage} totalPages={totalPages} />
-
     </div>
   );
 };
