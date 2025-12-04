@@ -6,8 +6,6 @@ import { LuFilter, LuSlidersHorizontal } from "react-icons/lu";
 import SearchBar from "../components/SearchBar";
 import FilterPopup from "../components/FilterPopup";
 import Pagination from "../components/Pagination";
-import Spinner from "../components/Spinner";
-import { Link } from "react-router-dom";
 
 const Shop = () => {
   const [allProducts, setAllProducts] = useState([]);
@@ -84,153 +82,132 @@ const Shop = () => {
     ? filtered.slice((page - 1) * pageSize, page * pageSize)
     : filtered;
 
-  if (allProducts.length === 0) {
-    return <Spinner />;
-  }
-
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center">
-      <div className="w-full max-w-[1400px] px-4 md:px-10 lg:px-20 py-28">
+    <div className="px-4 md:px-10 lg:px-20 py-28">
 
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <SearchBar search={search} setSearch={setSearch} />
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                setTempTypes(selectedTypes);
-                setTempCategories(selectedCategories);
-                setShowFilter(true);
-              }}
-              className="px-8 py-3 bg-login-btn rounded-full text-white flex items-center gap-2"
-            >
-              <LuFilter className="text-xl" />
-              Filter
+        <SearchBar search={search} setSearch={setSearch} />
+
+        <div className="flex items-center gap-3">
+
+          <button
+            onClick={() => {
+              setTempTypes(selectedTypes);
+              setTempCategories(selectedCategories);
+              setShowFilter(true);
+            }}
+            className="px-8 py-3 bg-login-btn rounded-full text-white flex items-center gap-2"
+          >
+            <LuFilter className="text-xl" />
+            Filter
+          </button>
+
+          <div className="relative group">
+            <button className="px-8 py-3 bg-login-btn rounded-full text-white flex items-center gap-2">
+              <LuSlidersHorizontal className="text-xl" />
+              Sort
             </button>
 
-            <div className="relative group">
-              <button className="px-8 py-3 bg-login-btn rounded-full text-white flex items-center gap-2">
-                <LuSlidersHorizontal className="text-xl" />
-                Sort
+            <div className="absolute hidden group-hover:flex flex-col mt-2 w-44 right-0 bg-white shadow rounded-xl z-50">
+              <button
+                onClick={() => {
+                  setSort(3);
+                  setPage(1);
+                }}
+                className="px-4 py-2 bg-login-btn text-white rounded-t-xl"
+              >
+                Price: Low → High
               </button>
 
-              <div className="absolute hidden group-hover:flex flex-col mt-2 w-44 right-0 bg-white shadow rounded-xl z-50">
-                <button
-                  onClick={() => {
-                    setSort(3);
-                    setPage(1);
-                  }}
-                  className="px-4 py-2 bg-login-btn text-white rounded-t-xl"
-                >
-                  Price: Low → High
-                </button>
-
-                <button
-                  onClick={() => {
-                    setSort(4);
-                    setPage(1);
-                  }}
-                  className="px-4 py-2 bg-login-btn text-white rounded-b-xl"
-                >
-                  Price: High → Low
-                </button>
-              </div>
+              <button
+                onClick={() => {
+                  setSort(4);
+                  setPage(1);
+                }}
+                className="px-4 py-2 bg-login-btn text-white rounded-b-xl"
+              >
+                Price: High → Low
+              </button>
             </div>
           </div>
+
         </div>
-
-        <FilterPopup
-          show={showFilter}
-          closing={closingFilter}
-          uniqueTypes={uniqueTypes}
-          uniqueCategories={uniqueCategories}
-          tempTypes={tempTypes}
-          tempCategories={tempCategories}
-          toggleValue={toggleValue}
-          setTempTypes={setTempTypes}
-          setTempCategories={setTempCategories}
-          closePopup={() => {
-            setClosingFilter(true);
-            setTimeout(() => {
-              setShowFilter(false);
-              setClosingFilter(false);
-            }, 250);
-          }}
-          applyFilters={() => {
-            setSelectedTypes(tempTypes);
-            setSelectedCategories(tempCategories);
-            setPage(1);
-
-            setClosingFilter(true);
-            setTimeout(() => {
-              setShowFilter(false);
-              setClosingFilter(false);
-            }, 250);
-          }}
-        />
-
-        {filtered.length === 0 && (
-          <p className="text-center text-xl text-[#011749] mt-10 font-bold">
-            No products match your filters.
-          </p>
-        )}
-
-       
-        <div
-          className="
-            grid 
-            grid-cols-1 
-            sm:grid-cols-2 
-            md:grid-cols-3 
-            lg:grid-cols-4 
-            xl:grid-cols-5 
-            2xl:grid-cols-6 
-            gap-6 
-            mt-10
-          "
-        >
-          {displayed.map((product) => (
-            <Link key={product.id} to={`productdetails/${product.id}`}>
-              <div className="bg-[#F4F4F4] p-4 rounded-2xl shadow-md hover:shadow-lg transition-all relative  h-[520px]">
-              <div className="absolute right-3 top-3 flex flex-col z-20">
-                <button className="w-8 h-8 bg-[#E7A01C] rounded-full flex justify-center items-center mr-2 mt-4">
-                  <IoCartOutline className="text-white text-lg" />
-                </button>
-                <button className="w-8 h-8 bg-[#E7A01C] rounded-full flex justify-center items-center mr-2 mt-4">
-                  <IoHeartOutline className="text-white text-lg" />
-                </button>
-              </div>
-
-              <img
-                src={
-                  product.photos?.[0]?.imageName
-                    ? `http://petmarket.runasp.net${product.photos[0].imageName}`
-                    : '/default.png'
-                }
-                className="rounded-xl h-80 w-full object-cover mb-4 hover:scale-[1.03] transition-all"
-                alt={product.name}
-              />
-
-              <div className="text-yellow-400 text-lg">
-                {"★".repeat(
-                  Math.max(0, Math.round(Number(product.rating) || 0))
-                )}
-              </div>
-
-              <h3 className="font-bold text-lg text-[#011749]">{product.name}</h3>
-              <p className="text-sm text-[#011749] line-clamp-2">{product.description}</p>
-
-              <span className="font-bold text-[#011749] mt-2 block">
-                EGP {product.price}
-              </span>
-            </div>
-           </Link>
-          ))}
-        </div>
-       
-        <Pagination page={page} setPage={setPage} totalPages={totalPages} />
-
       </div>
+
+      <FilterPopup
+        show={showFilter}
+        closing={closingFilter}
+        uniqueTypes={uniqueTypes}
+        uniqueCategories={uniqueCategories}
+        tempTypes={tempTypes}
+        tempCategories={tempCategories}
+        toggleValue={toggleValue}
+        setTempTypes={setTempTypes}
+        setTempCategories={setTempCategories}
+        closePopup={() => {
+          setClosingFilter(true);
+          setTimeout(() => {
+            setShowFilter(false);
+            setClosingFilter(false);
+          }, 250);
+        }}
+        applyFilters={() => {
+          setSelectedTypes(tempTypes);
+          setSelectedCategories(tempCategories);
+          setPage(1);
+
+          setClosingFilter(true);
+          setTimeout(() => {
+            setShowFilter(false);
+            setClosingFilter(false);
+          }, 250);
+        }}
+      />
+
+      {filtered.length === 0 && (
+        <p className="text-center text-xl text-[#011749] mt-10 font-bold">
+          No products match your filters.
+        </p>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10">
+        {displayed.map((product) => (
+          <div
+            key={product.id}
+            className="bg-[#F4F4F4] p-4 rounded-xl shadow relative"
+          >
+            <div className="absolute right-3 top-3 flex flex-col z-20">
+              <button className="w-8 h-8 bg-[#E7A01C] rounded-full flex justify-center items-center mr-2 mt-4">
+                <IoCartOutline className="text-white text-lg" />
+              </button>
+              <button className="w-8 h-8 bg-[#E7A01C] rounded-full flex justify-center items-center mr-2 mt-4">
+                <IoHeartOutline className="text-white text-lg" />
+              </button>
+            </div>
+
+            <img
+              src={`http://petmarket.runasp.net${product.photos[0]?.imageName}`}
+              className="rounded-lg h-80 w-full object-cover mb-4"
+              alt={product.name}
+            />
+
+            <div className="text-yellow-400 text-lg">
+              {"★".repeat(Math.round(product.rating))}
+            </div>
+
+            <h3 className="font-bold text-lg text-[#011749]">{product.name}</h3>
+            <p className="text-sm text-[#011749]">{product.description}</p>
+
+            <span className="font-bold text-[#011749] mt-2 block">
+              EGP {product.price}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <Pagination page={page} setPage={setPage} totalPages={totalPages} />
+
     </div>
   );
 };
