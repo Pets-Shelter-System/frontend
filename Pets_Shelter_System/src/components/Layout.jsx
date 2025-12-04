@@ -8,11 +8,13 @@ export default function Layout() {
      <>
       <Navbar />
       
-     <div className="container   w-full">
-       
-       <Outlet/>
+    <div className="w-full pt-10 flex justify-center ">
+  <div className="w-full max-w-[1400px]">
+    <Outlet />
+  </div>
+</div>
+
         
-     </div>
       <Footer/>
     </>
   )
