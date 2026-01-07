@@ -1,13 +1,73 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FaBars, FaTimes, FaRegUser  } from "react-icons/fa";
-import { IoCartOutline } from "react-icons/io5";
+import { IoCartOutline, IoHeartOutline } from "react-icons/io5";
 import logo from "../assets/logo.png";
-import { Link, useLocation } from "react-router-dom";
+import Swal from "sweetalert2";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+ import { toast } from "react-toastify";
+
+import { CartContext } from "./context/CartContext";
+import { FavoriteContext } from "./context/FavoriteContext";
 
 const Navbar = () => {
+   
+  const { cartItems } = useContext(CartContext);
+const { favorites, toggleFavorite } = useContext(FavoriteContext);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+const cartCount = cartItems.reduce(
+  (sum, item) => sum + item.quantity,
+  0
+);
+
+ 
+
   const toggleMenu = () => setMenuOpen(!menuOpen);
+
+
+const handleCartClick = () => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    Swal.fire({
+      icon: "warning",
+      title: "Login required",
+      text: "Please login or sign up to view your cart",
+      confirmButtonText: "Login",
+      showCancelButton: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/login");
+      }
+    });
+    return;
+  }
+
+  navigate("/cart");
+};
+
+const favoriteCount = favorites.length;
+
+const handleFavoriteClick = () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    toast.warning("Please login to view your favorites ❤️");
+    navigate("/login");
+    return;
+  }
+  navigate("/favorite");
+};
+
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+
+    navigate("/");
+  };
 
   return (
     <nav className="bg-[#011749] text-white px-10 flex items-center justify-between fixed top-0 left-0 w-full z-50">
@@ -58,24 +118,71 @@ const Navbar = () => {
         </li>
       </ul>
 
-      <div className="hidden md:flex items-center gap-4">
-        <Link to="/cart">
-          <span className="bg-login-btn p-2 rounded-full flex items-center justify-center cursor-pointer">
-            <IoCartOutline className="text-white text-xl" />
-          </span>
-        </Link>
+      <div className="hidden md:flex items-center justify-center gap-4">
+        <span
+  onClick={handleCartClick}
+  className="bg-login-btn p-2 rounded-full relative flex items-center justify-center cursor-pointer"
+>
+  <IoCartOutline className="text-white text-xl" />
+ {cartCount > 0 && (
+  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+    {cartCount}
+  </span>
+)}
 
-        <Link to="/login">
-          <button className="bg-login-btn px-4 py-1 rounded-full font-medium">
-            Login
-          </button>
-        </Link>
+</span>
 
-        <Link to="/login">
-          <span className="bg-login-btn p-[8px] rounded-full flex items-center justify-center cursor-pointer">
-            <FaRegUser  className="text-sm cursor-pointer" />
-          </span>
+ <span
+  onClick={handleFavoriteClick}
+  className="bg-[#E7A01C] p-2 rounded-full relative flex items-center justify-center cursor-pointer"
+>
+  <IoHeartOutline className="text-white text-lg" />
+  {favoriteCount > 0 && (
+    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+      {favoriteCount}
+    </span>
+  )}
+</span>
+
+
+
+        {token ? (
+  // ✅ Logged in
+  <button
+    onClick={handleLogout}
+    className="bg-login-btn px-4 py-1 rounded-full font-medium"
+  >
+    Logout
+  </button>
+) : (
+  // ❌ Not logged in
+  <div className="relative">
+    <span
+      onClick={() => setUserMenuOpen(!userMenuOpen)}
+      className="bg-login-btn p-[8px] rounded-full flex items-center justify-center cursor-pointer"
+    >
+      <FaRegUser className="text-sm" />
+    </span>
+
+    {userMenuOpen && (
+      <div className="absolute right-0 mt-2 w-32 bg-white text-[#011749] rounded-xl shadow-lg flex flex-col z-50">
+        <Link
+          to="/login"
+          className="px-4 py-2 hover:bg-gray-100 rounded-t-xl"
+        >
+          Login
         </Link>
+        <Link
+          to="/signup"
+          className="px-4 py-2 hover:bg-gray-100 rounded-b-xl"
+        >
+          Sign up
+        </Link>
+      </div>
+    )}
+  </div>
+)}
+
       </div>
 
       <button
@@ -143,23 +250,59 @@ const Navbar = () => {
         </li>
 
         <div className="flex justify-center gap-3 pt-3 border-t border-gray-700">
-          <Link to="/cart" onClick={() => setMenuOpen(false)}>
-            <span className="bg-login-btn p-2 rounded-full flex items-center justify-center">
-              <IoCartOutline className="text-white text-xl" />
-            </span>
-          </Link>
+          <span
+  onClick={() => {
+    setMenuOpen(false);
+    handleCartClick();
+  }}
+  className="bg-login-btn p-2 rounded-full relative flex items-center justify-center cursor-pointer"
+>
+  <IoCartOutline className="text-white text-xl" />
+   <span className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+       
+    </span>
+</span>
 
-          <Link to="/login" onClick={() => setMenuOpen(false)}>
-            <button className="bg-login-btn text-white px-4 py-1 rounded-full font-medium">
-              Login
+
+          {token ? (
+            <button
+              onClick={() => {
+                handleLogout();
+                setMenuOpen(false);
+              }}
+              className="bg-login-btn text-white px-4 py-1 rounded-full font-medium"
+            >
+              Logout
             </button>
-          </Link>
+          ) : (
+            <div className="relative">
+              <span
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="bg-login-btn p-[9px] rounded-full flex items-center justify-center"
+              >
+                <FaRegUser className="text-white text-xl" />
+              </span>
 
-          <Link to="/login" onClick={() => setMenuOpen(false)}>
-            <span className="bg-login-btn p-[9px] rounded-full flex items-center justify-center">
-              <FaRegUser  className="text-white text-xl" />
-            </span>
-          </Link>
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-32 bg-white text-[#011749] rounded-xl shadow-lg flex flex-col z-50">
+                  <Link
+                    to="/login"
+                    onClick={() => setMenuOpen(false)}
+                    className="px-4 py-2 hover:bg-gray-100 rounded-t-xl"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/signup"
+                    onClick={() => setMenuOpen(false)}
+                    className="px-4 py-2 hover:bg-gray-100 rounded-b-xl"
+                  >
+                    Sign up
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </ul>
     </nav>

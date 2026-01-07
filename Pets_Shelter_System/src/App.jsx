@@ -5,35 +5,50 @@ import Signup from "./pages/Signup";
 import Layout from "./components/Layout";
 import AuthLayout from "./components/AuthLayout";
 import Shop from "./pages/Shop";
+import Cart from "./pages/cart";
 import ProductDetails from "./pages/ProductDetails";
+import CartContextProvider from "./components/context/CartContext";
+ 
+import { Toaster } from "react-hot-toast";
+import FavoriteContextProvider from "./components/context/FavoriteContext";
+import Favorite from "./pages/Favorite";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="shop" element={<Shop />} />
-        <Route path="shop/product/:id" element={<ProductDetails />} />
-      </Route>
+    <>
+    <FavoriteContextProvider>
+       <CartContextProvider>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="shop" element={<Shop />} />
+          <Route path="cart" element={<Cart />} />
+          <Route path="favorite" element={<Favorite />} />
+          <Route path="shop/product/:id" element={<ProductDetails />} />
+        </Route>
 
-      <Route
-        path="/login"
-        element={
-          <AuthLayout>
-            <Login />
-          </AuthLayout>
-        }
-      />
+        <Route
+          path="/login"
+          element={
+            <AuthLayout>
+              <Login />
+            </AuthLayout>
+          }
+        />
 
-      <Route
-        path="/signup"
-        element={
-          <AuthLayout>
-            <Signup />
-          </AuthLayout>
-        }
-      />
-    </Routes>
+        <Route
+          path="/signup"
+          element={
+            <AuthLayout>
+              <Signup />
+            </AuthLayout>
+          }
+        />
+      </Routes>
+       </CartContextProvider>
+    </FavoriteContextProvider>
+    <Toaster/>
+    </>
   );
 }
 

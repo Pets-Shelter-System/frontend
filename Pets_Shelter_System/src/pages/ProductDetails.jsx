@@ -1,12 +1,14 @@
 import axios from "axios";
 import Slider from "react-slick";
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import { IoCartOutline, IoHeartOutline } from "react-icons/io5";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+import Swal from "sweetalert2";
+import { CartContext } from "../components/context/CartContext";
+import { CounterContext } from "../components/context/CounterContext";
 export default function ProductDetails() {
   const { id } = useParams();
   const [productDetails, setProductDetails] = useState(null);
@@ -20,6 +22,54 @@ export default function ProductDetails() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const baseUrl = "http://petmarket.runasp.net";
+let {counter,setcounter} = useContext(CounterContext)
+let {addToCart,getUserCartItems} = useContext(CartContext)
+const navigate = useNavigate();
+
+
+async function addProdToCart(prodId) {
+  try {
+    let response = await addToCart(prodId);
+    console.log("response:", response.data);
+
+    // جلب الكارت بعد الإضافة
+    await getUserCartItems();
+
+    setcounter(counter + 1);
+    Swal.fire({
+      icon: "success",
+      title: "Added to cart",
+      text: "Product added to cart successfully!",
+    });
+  } catch (err) {
+    console.log("Add to cart failed:", err.response?.data);
+    Swal.fire({
+      icon: "error",
+      title: "Failed to add",
+      text: err.response?.data?.title || "Something went wrong",
+    });
+  }
+}
+
+
+
+const handleCartClick = (productId) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    Swal.fire({
+      icon: "warning",
+      title: "Login required",
+      text: "Please login or sign up to add items to cart",
+    }).then(() => navigate("/login"));
+
+    return;
+  }
+
+  // TODO: Add to cart API
+  console.log("User is logged in → add to cart", productId);
+};
+
 
   const settings = {
     dots: true,
@@ -233,8 +283,13 @@ export default function ProductDetails() {
                   EGP {productDetails.price}
                 </p>
                 <div className="flex justify-center sm:justify-end gap-3">
-                  <button className="px-6 sm:px-8 py-3 bg-[#011749] text-white rounded-xl flex items-center gap-2 text-sm sm:text-base font-semibold hover:bg-opacity-90 transition shadow-md">
-                    <IoCartOutline className="text-lg sm:text-2xl" />
+                  <button className="px-6 sm:px-8 py-3 bg-[#011749] text-white rounded-xl flex items-center gap-2 text-sm sm:text-base font-semibold hover:bg-opacity-90 transition
+                   shadow-md" onClick={() => {
+                    handleCartClick(productDetails.id);
+                   addProdToCart(productDetails);
+                     setcounter(counter+1);
+                   }} >
+                    <IoCartOutline className="text-lg sm:text-2xl"  />
                     Add to cart
                   </button>
                 </div>

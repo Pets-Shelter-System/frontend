@@ -1,14 +1,22 @@
-import { useEffect, useState } from "react";
+import {  useContext, useEffect, useState } from "react";
 import api from "../API/api";
-import { IoCartOutline, IoHeartOutline } from "react-icons/io5";
+import { IoCartOutline, IoHeartOutline, IoHeart } from "react-icons/io5";
 import { LuFilter, LuSlidersHorizontal } from "react-icons/lu";
-
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 import FilterPopup from "../components/FilterPopup";
 import Pagination from "../components/Pagination";
-import { useNavigate } from "react-router-dom"; // ✅ تم الاستيراد
+import Spinner from "../components/Spinner";
+import { CounterContext } from "../components/context/CounterContext";
+import { CartContext } from "../components/context/CartContext";
+import toast from "react-hot-toast";
+import { FavoriteContext } from "../components/context/FavoriteContext";
+
 
 const Shop = () => {
+   let {addToCart} = useContext(CartContext)
+  let {counter,setcounter} = useContext(CounterContext)
   const [allProducts, setAllProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -22,7 +30,7 @@ const Shop = () => {
 
   const [tempTypes, setTempTypes] = useState([]);
   const [tempCategories, setTempCategories] = useState([]);
-
+const { toggleFavorite, isFavorite } = useContext(FavoriteContext);
   const pageSize = 12;
 
   const navigate = useNavigate(); 
@@ -36,6 +44,56 @@ const Shop = () => {
       list.includes(value) ? list.filter((v) => v !== value) : [...list, value]
     );
   };
+
+//   async function addProdToCart(prod) {
+//     let response = await addToCart(prod);
+//     console.log(response);
+    
+//     if (response.data.statusCode === 200) {
+//       toast.success( response.data.message);
+//     }else{
+//       toast.error("Failed to add to cart");
+//     }
+//   }
+
+//   const handleCartClick = (productId) => {
+//   const token = localStorage.getItem("token");
+
+//   if (!token) {
+//     Swal.fire({
+//       icon: "warning",
+//       title: "Login required",
+//       text: "Please login or sign up to add items to cart",
+//     }).then(() => navigate("/login"));
+
+//     return;
+//   }
+
+//   // TODO: Add to cart API
+//   console.log("User is logged in → add to cart", productId);
+// };
+
+
+const handleAddToCart = async (product) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    Swal.fire({
+      icon: "warning",
+      title: "Login required",
+      text: "Please login or sign up to add items to cart",
+    }).then(() => navigate("/login"));
+    return;
+  }
+
+  try {
+    await addToCart(product); // فعليًا بتضيف المنتج للكارت
+    setcounter(counter + 1);                  // تحديث العداد
+  } catch (err) {
+    // Error is handled in addToCart
+  }
+};
+
+
 
   useEffect(() => {
     const fetchAllPages = async () => {
@@ -169,9 +227,10 @@ const Shop = () => {
       />
 
       {filtered.length === 0 && (
-        <p className="text-center text-xl text-[#011749] mt-10 font-bold">
-          No products match your filters.
-        </p>
+        // <p className="text-center text-xl text-[#011749] mt-10 font-bold">
+        //   No products match your filters.
+        // </p>
+        <Spinner/>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10">
@@ -181,12 +240,20 @@ const Shop = () => {
             className="bg-[#F4F4F4] p-4 rounded-xl shadow relative"
           >
             <div className="absolute right-3 top-3 flex flex-col z-20">
-              <button className="w-8 h-8 bg-[#E7A01C] rounded-full flex justify-center items-center mr-2 mt-4">
+              <button onClick={() => handleAddToCart(product)} className="w-8 h-8 bg-[#E7A01C] rounded-full flex justify-center items-center mr-2 mt-4">
                 <IoCartOutline className="text-white text-lg" />
               </button>
-              <button className="w-8 h-8 bg-[#E7A01C] rounded-full flex justify-center items-center mr-2 mt-4">
-                <IoHeartOutline className="text-white text-lg" />
-              </button>
+              
+              <button
+  onClick={() => toggleFavorite(product)}
+  className="w-8 h-8 bg-[#E7A01C] rounded-full flex justify-center items-center mt-4"
+>
+  {isFavorite(product.id) ? (
+    <IoHeart className="text-red-600 text-lg" />
+  ) : (
+    <IoHeartOutline className="text-white text-lg" />
+  )}
+</button>
             </div>
 
             <img
