@@ -22,34 +22,20 @@ export default function ProductDetails() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const baseUrl = "http://petmarket.runasp.net";
-let {counter,setcounter} = useContext(CounterContext)
+ 
 let {addToCart,getUserCartItems} = useContext(CartContext)
 const navigate = useNavigate();
 
 
-async function addProdToCart(prodId) {
+async function addProdToCart(product) {
   try {
-    let response = await addToCart(prodId);
-    console.log("response:", response.data);
-
-    // جلب الكارت بعد الإضافة
-    await getUserCartItems();
-
-    setcounter(counter + 1);
-    Swal.fire({
-      icon: "success",
-      title: "Added to cart",
-      text: "Product added to cart successfully!",
-    });
+    await addToCart(product);
   } catch (err) {
-    console.log("Add to cart failed:", err.response?.data);
-    Swal.fire({
-      icon: "error",
-      title: "Failed to add",
-      text: err.response?.data?.title || "Something went wrong",
-    });
+    console.log("add to cart error", err);
   }
 }
+
+
 
 
 
@@ -283,15 +269,21 @@ const handleCartClick = (productId) => {
                   EGP {productDetails.price}
                 </p>
                 <div className="flex justify-center sm:justify-end gap-3">
-                  <button className="px-6 sm:px-8 py-3 bg-[#011749] text-white rounded-xl flex items-center gap-2 text-sm sm:text-base font-semibold hover:bg-opacity-90 transition
-                   shadow-md" onClick={() => {
-                    handleCartClick(productDetails.id);
-                   addProdToCart(productDetails);
-                     setcounter(counter+1);
-                   }} >
-                    <IoCartOutline className="text-lg sm:text-2xl"  />
-                    Add to cart
-                  </button>
+                 <button
+  className="px-6 sm:px-8 py-3 bg-[#011749] text-white rounded-xl flex items-center gap-2 text-sm sm:text-base font-semibold hover:bg-opacity-90 transition shadow-md"
+  onClick={() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
+      return;
+    }
+
+    addProdToCart(productDetails);
+  }}
+>
+  <IoCartOutline className="text-lg sm:text-2xl" />
+  Add to cart
+</button>
+
                 </div>
               </div>
             </div>
