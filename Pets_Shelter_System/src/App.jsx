@@ -8,46 +8,52 @@ import Shop from "./pages/Shop";
 import Cart from "./pages/cart";
 import ProductDetails from "./pages/ProductDetails";
 import CartContextProvider from "./components/context/CartContext";
- 
+
 import { Toaster } from "react-hot-toast";
 import FavoriteContextProvider from "./components/context/FavoriteContext";
 import Favorite from "./pages/Favorite";
+import AuthContextProvider from "./components/context/AuthContext";
+
+
 
 function App() {
   return (
     <>
-    <FavoriteContextProvider>
-       <CartContextProvider>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="shop" element={<Shop />} />
-          <Route path="cart" element={<Cart />} />
-          <Route path="favorite" element={<Favorite />} />
-          <Route path="shop/product/:id" element={<ProductDetails />} />
-        </Route>
+      <AuthContextProvider>
 
-        <Route
-          path="/login"
-          element={
-            <AuthLayout>
-              <Login />
-            </AuthLayout>
-          }
-        />
+        <FavoriteContextProvider>
+          <CartContextProvider>
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Home />} />
+                <Route path="shop" element={<Shop />} />
+                <Route path="cart" element={<Cart />} />
+                <Route path="favorite" element={<Favorite />} />
+                <Route path="shop/product/:id" element={<ProductDetails />} />
+              </Route>
 
-        <Route
-          path="/signup"
-          element={
-            <AuthLayout>
-              <Signup />
-            </AuthLayout>
-          }
-        />
-      </Routes>
-       </CartContextProvider>
-    </FavoriteContextProvider>
-    <Toaster/>
+              <Route
+                path="/login"
+                element={
+                  <AuthLayout>
+                    <Login />
+                  </AuthLayout>
+                }
+              />
+
+              <Route
+                path="/signup"
+                element={
+                  <AuthLayout>
+                    <Signup />
+                  </AuthLayout>
+                }
+              />
+            </Routes>
+          </CartContextProvider>
+        </FavoriteContextProvider>
+      </AuthContextProvider>
+      <Toaster />
     </>
   );
 }

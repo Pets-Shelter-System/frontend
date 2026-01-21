@@ -1,102 +1,115 @@
-import React, { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
 export const FavoriteContext = createContext();
 
 export default function FavoriteContextProvider({ children }) {
   const [favorites, setFavorites] = useState([]);
+
   const baseUrl = "http://petmarket.runasp.net";
+
   const token = localStorage.getItem("token");
 
-  const getAuthHeaders = () => ({
+  // headers memoized
+  const headers = useMemo(() => ({
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
-  });
+  }), [token]);
 
-  // جلب المفضلات من API أو localStorage عند البداية
- const getUserFavorites = async () => {
-  try {
-    let stored = localStorage.getItem("favorites");
-    if (stored) {
-      setFavorites(JSON.parse(stored));
+  // GET favorites
+  const fetchFavorites = useCallback(async () => {
+    if (!token) {
+      setFavorites([]);
+      return;
     }
 
-    if (!token) return;
-
-    const res = await axios.get(`${baseUrl}/api/Favorites`, {
-      headers: getAuthHeaders(),
-    });
-
-    const favoriteProducts = res.data?.data?.items?.map(item => item.product || item) || [];
-
-    // لو فيه منتجات جديدة من السيرفر ما موجودةش في localStorage, ضيفها
-    const updatedFavorites = [
-      ...JSON.parse(stored || "[]").filter(f => favoriteProducts.every(fp => fp.id !== f.id)),
-      ...favoriteProducts
-    ];
-
-    setFavorites(updatedFavorites);
-    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-  } catch (err) {
-    console.error("Get favorites error:", err.response?.data || err);
-  }
-};
-
-
-  // إضافة للمفضلة
-  const addToFavorite = async (prod) => {
-    if (!token) return;
     try {
-      await axios.post(`${baseUrl}/api/Favorites`, { productId: prod.id }, { headers: getAuthHeaders() });
-      setFavorites(prev => {
-        if (prev.some(f => f.id === prod.id)) return prev;
-        const updated = [...prev, prod];
-        localStorage.setItem("favorites", JSON.stringify(updated));
-        return updated;
-      });
+      const res = await axios.get(`${baseUrl}/api/Favorites`, { headers });
+      setFavorites(res.data.data || []);
+    } catch (err) {
+      console.error("fetchFavorites error:", err.response?.data || err);
+    }
+  }, [token, headers]);
+
+  // ADD favorite
+  const addFavorite = async (product) => {
+    if (!token) {
+      toast.error("Login required ❤️");
+      return;
+    }
+
+    try {
+      await axios.post(`${baseUrl}/api/Favorites`,
+        { productId: product.id },
+        { headers }
+      );
+
       toast.success("Added to favorites ❤️");
+
+      // Important → refresh from backend for consistency
+      fetchFavorites();
     } catch (err) {
-      console.error("Add to favorite error:", err.response?.data || err);
+      toast.error("Failed to add favorite");
+      console.error(err.response?.data || err);
     }
   };
 
-  // إزالة من المفضلة
-  const removeFromFavorite = async (productId) => {
-    if (!token) return;
+  // REMOVE favorite
+  const removeFavorite = async (productId) => {
+    if (!token) {
+      return;
+    }
+
     try {
-      await axios.delete(`${baseUrl}/api/Favorites/${productId}`, { headers: getAuthHeaders() });
-      setFavorites(prev => {
-        const updated = prev.filter(item => item.id !== productId);
-        localStorage.setItem("favorites", JSON.stringify(updated));
-        return updated;
-      });
-      toast.info("Removed from favorites 💔");
+      await axios.delete(`${baseUrl}/api/Favorites/${productId}`, { headers });
+
+      toast("Removed 💔");
+
+      // refresh for consistency
+      setFavorites(prev => prev.filter(f => f.id !== productId));
     } catch (err) {
-      console.error("Remove from favorite error:", err.response?.data || err);
+      toast.error("Failed to remove favorite");
+      console.error(err.response?.data || err);
     }
   };
 
-  const isFavorite = (productId) => favorites.some(f => f.id === productId);
-
-  const toggleFavorite = async (prod) => {
-    if (isFavorite(prod.id)) await removeFromFavorite(prod.id);
-    else await addToFavorite(prod);
+  // TOGGLE favorite
+  const toggleFavorite = async (product) => {
+    if (isFavorite(product.id)) {
+      await removeFavorite(product.id);
+    } else {
+      await addFavorite(product);
+    }
   };
 
+  // CHECK
+  const isFavorite = useCallback(
+    (productId) => favorites.some(f => f.id === productId),
+    [favorites]
+  );
+
+  // load on login refresh
   useEffect(() => {
-    getUserFavorites();
-  }, [token]);
+    fetchFavorites();
+  }, [fetchFavorites]);
+
+  // logout cleanup
+  const clearFavorites = () => {
+    setFavorites([]);
+  };
 
   return (
     <FavoriteContext.Provider
       value={{
         favorites,
-        addToFavorite,
-        removeFromFavorite,
         toggleFavorite,
-        getUserFavorites,
-        isFavorite
+        addFavorite,
+        removeFavorite,
+        isFavorite,
+        fetchFavorites,
+        clearFavorites,
+        setFavorites,
       }}
     >
       {children}

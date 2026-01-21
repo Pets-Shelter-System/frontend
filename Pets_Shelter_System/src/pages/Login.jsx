@@ -1,16 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import api from "../API/api";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+
+import { FavoriteContext } from "../components/context/FavoriteContext";
+import { CartContext } from "../components/context/CartContext";
 
 const INPUT_CLASS =
   "w-full border border-[#717070] rounded-[10px] px-4 py-2 my-2 text-sm text-[#999999] focus:outline-none focus:ring-0 focus:border-[#717070]";
 
 const Login = () => {
+  const navigate = useNavigate();
+
+  const { fetchFavorites } = useContext(FavoriteContext);
+  const { fetchCart } = useContext(CartContext);
+
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,12 +28,22 @@ const Login = () => {
 
     try {
       const res = await api.post("/Account/login", formData);
-      if (res.data?.isAuthenticated) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data));
-        alert("Login successful!");
-        navigate("/");
-      } else setError("Invalid email or password!");
+
+      if (!res.data?.isAuthenticated) {
+        setError("Invalid email or password!");
+        return;
+      }
+
+      // Save user + token
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data));
+
+      // Load favorites & cart immediately
+      await fetchFavorites();
+      await fetchCart();
+
+      navigate("/");
+
     } catch (err) {
       setError(err.response?.data?.message || "Login failed!");
     }
