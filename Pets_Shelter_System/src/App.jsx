@@ -13,6 +13,7 @@ import { Toaster } from "react-hot-toast";
 import FavoriteContextProvider from "./components/context/FavoriteContext";
 import Favorite from "./pages/Favorite";
 import AuthContextProvider from "./components/context/AuthContext";
+import Order from "./pages/Order/Order";
 
 
 
@@ -30,6 +31,7 @@ function App() {
                 <Route path="cart" element={<Cart />} />
                 <Route path="favorite" element={<Favorite />} />
                 <Route path="shop/product/:id" element={<ProductDetails />} />
+                <Route path="/order" element={<Order />} />
               </Route>
 
               <Route
