@@ -1,36 +1,76 @@
-const OrderConfirmation = ({ prevStep, cartItems = [], totalPrice = 0 }) => {
+import { useContext, useState } from "react";
+import CheckoutSteps from "../components/CheckoutSteps";
+import { CheckoutContext } from "../../../components/context/CheckoutContext";
+import { AuthContext } from "../../../components/context/AuthContext";
+import { CartContext } from "../../../components/context/CartContext";
+import Swal from "sweetalert2";
+import axios from "axios";
+
+const baseUrl = "http://petmarket.runasp.net/api";
+
+const OrderConfirmation = ({ prevStep }) => {
+    const { cartItems } = useContext(CartContext);
+
+    const {
+        createOrder,
+        address,
+        paymentSummary,
+        shipping,
+        createPaymentIntent
+    } = useContext(CheckoutContext);
+
+    const { user, token } = useContext(AuthContext);
+
+    const [loading, setLoading] = useState(false);
+    const [orderTotal, setOrderTotal] = useState(null);
+
+    const handlePay = async () => {
+        setLoading(true);
+
+        try {
+            // STEP 1: Create PaymentIntent (still needed for backend flow)
+            const paymentData = await createPaymentIntent();
+
+            // STEP 2: Update Cart with clientSecret + delivery
+            await axios.post(
+                `${baseUrl}/Cart`,
+                {
+                    id: user.email,
+                    items: cartItems,
+                    deliveryMethodId: shipping.id,
+                    clientSecret: paymentData.clientSecret,
+                    paymentIntentId: paymentData.paymentIntentId
+                },
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+
+            // STEP 3: Create order
+            const orderData = await createOrder();
+            const createdOrder = orderData.data;
+            const orderId = createdOrder.id;
+
+            setOrderTotal(createdOrder.total);
+
+            // STEP 4: Just redirect (NO STRIPE CONFIRM)
+            window.location.href = `/order/thank-you`;
+
+        } catch (err) {
+            console.error(err);
+            Swal.fire({
+                icon: "error",
+                title: "Order Failed",
+                text: "Something went wrong while creating order"
+            });
+        }
+
+        setLoading(false);
+    };
 
     return (
-        <div className="rounded-[10px] border shadow-sm bg-white p-8 w-full max-w-[650px]">
-
-            {/* STEPS */}
-            <div className="flex items-center justify-between mb-10 px-2">
-
-                {["Address", "Shipping", "Payment", "Confirmation"].map((label, i) => {
-                    const idx = i + 1;
-                    const active = idx === 4;
-                    const done = idx < 4;
-
-                    return (
-                        <>
-                            <div key={label} className="flex flex-col items-center">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold
-                                    ${done ? "bg-[#E7A01C] text-white"
-                                        : active ? "border-2 border-gray-400 text-gray-500"
-                                            : "bg-gray-300 text-white"}`}>
-                                    {done ? "✔" : idx}
-                                </div>
-                                <span className={`text-sm mt-2 font-semibold
-                                    ${active ? "text-[#011749]" : "text-[#011749]"}`}>
-                                    {label}
-                                </span>
-                            </div>
-
-                            {idx !== 4 && <div className="flex-1 h-[2px] bg-gray-200 mx-2"></div>}
-                        </>
-                    );
-                })}
-            </div>
+        <div className="rounded-[10px] border shadow-sm bg-white p-8 w-full max-w-[650px] font-[Poppins]">
+            <CheckoutSteps current={4} />
 
             {/* INFO */}
             <div className="space-y-4 mb-6">
@@ -38,38 +78,40 @@ const OrderConfirmation = ({ prevStep, cartItems = [], totalPrice = 0 }) => {
 
                 <div className="text-[13px] text-[#222]">
                     <span className="font-semibold">Shipping address</span>
-                    <p className="text-gray-500">Bob Bobbity, 100 Centre Street, New York, NY, 10013, US</p>
+                    <p className="text-gray-500">
+                        {address.name}, {address.line1}, {address.city}, {address.country}
+                    </p>
                 </div>
 
                 <div className="text-[13px] text-[#222]">
                     <span className="font-semibold">Payment details</span>
-                    <p className="text-gray-500 uppercase">MASTERCARD **** **** 4444, Exp: 12/2025</p>
+                    <p className="text-gray-500 uppercase">
+                        {paymentSummary.brand} **** {paymentSummary.last4}, Exp: {paymentSummary.expMonth}/{paymentSummary.expYear}
+                    </p>
                 </div>
             </div>
 
             {/* CART ITEMS */}
             <div className="space-y-3">
-                {cartItems?.length > 0 ? (
-                    cartItems.map(item => (
-                        <div key={item.productId} className="flex items-center justify-between py-2">
-                            <div className="flex items-center gap-3">
-                                <img
-                                    src={item.pictureUrls?.[0] || "/placeholder.png"}
-                                    className="w-14 h-14 rounded-md border"
-                                />
-                                <span className="font-semibold text-sm text-[#011749]">
-                                    {item.productName}
-                                </span>
-                            </div>
-                            <div className="flex gap-10 items-center text-sm font-semibold">
-                                <span className="text-gray-600">x{item.quantity}</span>
-                                <span className="text-[#011749]">${(item.price * item.quantity).toFixed(2)}</span>
-                            </div>
+                {cartItems.map(item => (
+                    <div key={item.productId} className="flex items-center justify-between py-2">
+                        <div className="flex items-center gap-3">
+                            <img
+                                src={item.pictureUrls?.[0] ? `http://petmarket.runasp.net${item.pictureUrls[0]}` : "/placeholder.png"}
+                                className="w-14 h-14 rounded-md border"
+                            />
+                            <span className="font-semibold text-sm text-[#011749]">
+                                {item.productName}
+                            </span>
                         </div>
-                    ))
-                ) : (
-                    <p className="text-sm text-gray-500">No items found</p>
-                )}
+                        <div className="flex gap-10 items-center text-sm font-semibold">
+                            <span className="text-gray-600">x{item.quantity}</span>
+                            <span className="text-[#011749]">
+                                ${(item.price * item.quantity).toFixed(2)}
+                            </span>
+                        </div>
+                    </div>
+                ))}
             </div>
 
             {/* BUTTONS */}
@@ -81,11 +123,18 @@ const OrderConfirmation = ({ prevStep, cartItems = [], totalPrice = 0 }) => {
                     Back
                 </button>
 
-                <button className="bg-[#011749] px-6 py-2 rounded-lg text-white font-semibold">
-                    Pay ${totalPrice.toFixed(2)}
+                <button
+                    onClick={handlePay}
+                    disabled={loading}
+                    className="bg-[#011749] px-6 py-2 rounded-lg text-white font-semibold"
+                >
+                    {loading
+                        ? "Processing..."
+                        : orderTotal !== null
+                            ? `Continue $${orderTotal.toFixed(2)}`
+                            : "Continue"}
                 </button>
             </div>
-
         </div>
     );
 };

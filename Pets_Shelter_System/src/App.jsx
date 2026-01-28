@@ -14,7 +14,8 @@ import FavoriteContextProvider from "./components/context/FavoriteContext";
 import Favorite from "./pages/Favorite";
 import AuthContextProvider from "./components/context/AuthContext";
 import Order from "./pages/Order/Order";
-
+import CheckoutContextProvider from './components/context/CheckoutContext'
+import ThankYou from "./pages/ThankYou";
 
 
 function App() {
@@ -24,34 +25,37 @@ function App() {
 
         <FavoriteContextProvider>
           <CartContextProvider>
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Home />} />
-                <Route path="shop" element={<Shop />} />
-                <Route path="cart" element={<Cart />} />
-                <Route path="favorite" element={<Favorite />} />
-                <Route path="shop/product/:id" element={<ProductDetails />} />
-                <Route path="/order" element={<Order />} />
-              </Route>
+            <CheckoutContextProvider>
+              <Routes>
+                <Route path="/" element={<Layout />}>
+                  <Route index element={<Home />} />
+                  <Route path="shop" element={<Shop />} />
+                  <Route path="cart" element={<Cart />} />
+                  <Route path="favorite" element={<Favorite />} />
+                  <Route path="shop/product/:id" element={<ProductDetails />} />
+                  <Route path="/order" element={<Order />} />
+                  <Route path="/order/thank-you" element={<ThankYou />} />
+                </Route>
 
-              <Route
-                path="/login"
-                element={
-                  <AuthLayout>
-                    <Login />
-                  </AuthLayout>
-                }
-              />
+                <Route
+                  path="/login"
+                  element={
+                    <AuthLayout>
+                      <Login />
+                    </AuthLayout>
+                  }
+                />
 
-              <Route
-                path="/signup"
-                element={
-                  <AuthLayout>
-                    <Signup />
-                  </AuthLayout>
-                }
-              />
-            </Routes>
+                <Route
+                  path="/signup"
+                  element={
+                    <AuthLayout>
+                      <Signup />
+                    </AuthLayout>
+                  }
+                />
+              </Routes>
+            </CheckoutContextProvider>
           </CartContextProvider>
         </FavoriteContextProvider>
       </AuthContextProvider>
