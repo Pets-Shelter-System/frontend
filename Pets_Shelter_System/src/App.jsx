@@ -16,6 +16,8 @@ import AuthContextProvider from "./components/context/AuthContext";
 import Order from "./pages/Order/Order";
 import CheckoutContextProvider from './components/context/CheckoutContext'
 import ThankYou from "./pages/ThankYou";
+import Adoption from "./pages/Adoption";
+import AnimalDetails from "./pages/AnimalDetails";
 
 
 function App() {
@@ -35,6 +37,9 @@ function App() {
                   <Route path="shop/product/:id" element={<ProductDetails />} />
                   <Route path="/order" element={<Order />} />
                   <Route path="/order/thank-you" element={<ThankYou />} />
+                  <Route path="/adoption" element={<Adoption />} />
+                  <Route path="/adoption/:id" element={<AnimalDetails />} />
+
                 </Route>
 
                 <Route

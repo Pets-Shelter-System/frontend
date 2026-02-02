@@ -5,16 +5,16 @@ import Footer from './Footer'
 
 export default function Layout() {
   return (
-     <>
+    <>
       <Navbar />
-      
-     <div className="container   w-full">
-       
-       <Outlet/>
-        
-     </div>
-      <Footer/>
+
+      <div className="container w-full pt-[65px] min-h-screen">
+
+        <Outlet />
+
+      </div>
+      <Footer />
     </>
   )
-   
+
 }

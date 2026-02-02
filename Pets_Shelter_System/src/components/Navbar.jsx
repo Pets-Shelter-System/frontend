@@ -82,7 +82,7 @@ const Navbar = () => {
       <ul className="hidden md:flex gap-6 items-center">
         <li><Link to="/" className={`px-4 py-1 rounded-full font-medium ${location.pathname === "/" ? "bg-login-btn" : ""}`}>Home</Link></li>
         <li><Link to="/shop" className={`px-4 py-1 rounded-full font-medium ${location.pathname === "/shop" ? "bg-login-btn" : ""}`}>Shop</Link></li>
-        <li><span className="font-medium">Adopt</span></li>
+        <li><Link to="/adoption" className={`px-4 py-1 rounded-full font-medium ${location.pathname.startsWith("/adoption") ? "bg-login-btn" : ""}`}>Adopt</Link></li>
         <li><span className="font-medium">Foster</span></li>
         <li><span className="font-medium">Sponsor</span></li>
         <li><span className="font-medium">Contact</span></li>
@@ -142,7 +142,7 @@ const Navbar = () => {
       >
         <Link to="/" onClick={() => setMenuOpen(false)} className="text-lg text-white">Home</Link>
         <Link to="/shop" onClick={() => setMenuOpen(false)} className="text-lg text-white">Shop</Link>
-        <span className="text-white text-lg">Adopt</span>
+        <Link to="/adoption" className="text-white text-lg cursor-pointer">Adopt</Link>
         <span className="text-white text-lg">Foster</span>
         <span className="text-white text-lg">Sponsor</span>
         <span className="text-white text-lg">Contact</span>
