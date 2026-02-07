@@ -18,7 +18,8 @@ import CheckoutContextProvider from './components/context/CheckoutContext'
 import ThankYou from "./pages/ThankYou";
 import Adoption from "./pages/Adoption";
 import AnimalDetails from "./pages/AnimalDetails";
-
+import AdoptMe from "./pages/AdoptMe";
+import ScrollToTop from "./components/ScrollTop";
 
 function App() {
   return (
@@ -28,6 +29,8 @@ function App() {
         <FavoriteContextProvider>
           <CartContextProvider>
             <CheckoutContextProvider>
+              <ScrollToTop />
+
               <Routes>
                 <Route path="/" element={<Layout />}>
                   <Route index element={<Home />} />
@@ -39,6 +42,7 @@ function App() {
                   <Route path="/order/thank-you" element={<ThankYou />} />
                   <Route path="/adoption" element={<Adoption />} />
                   <Route path="/adoption/:id" element={<AnimalDetails />} />
+                  <Route path="/adoption/:id/adopt-me" element={<AdoptMe />} />
 
                 </Route>
 

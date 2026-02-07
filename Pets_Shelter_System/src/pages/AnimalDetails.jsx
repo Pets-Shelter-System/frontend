@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Spinner from "../components/Spinner";
 
@@ -18,7 +18,10 @@ const BASE_URL = "http://petmarket.runasp.net";
 const getImage = (img) =>
     img ? `${BASE_URL}${img}` : "https://via.placeholder.com/300";
 
+
 const AnimalDetails = () => {
+    const navigate = useNavigate();
+
     const { id } = useParams();
     const [animal, setAnimal] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -119,7 +122,7 @@ const AnimalDetails = () => {
 
                         {/* Buttons */}
                         <div className="flex gap-4 mt-8">
-                            <button className="bg-[#011749] text-white px-6 py-2 rounded-full text-sm">
+                            <button onClick={() => navigate(`/adoption/${id}/adopt-me`)} className="bg-[#011749] text-white px-6 py-2 rounded-full text-sm">
                                 Adopt Me
                             </button>
                             <button className="border border-[#011749] px-6 py-2 rounded-full text-sm">
