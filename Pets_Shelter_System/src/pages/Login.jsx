@@ -5,7 +5,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import { FavoriteContext } from "../components/context/FavoriteContext";
 import { CartContext } from "../components/context/CartContext";
-
+import { AuthContext } from "../components/context/AuthContext";
 const INPUT_CLASS =
   "w-full border border-[#717070] rounded-[10px] px-4 py-2 my-2 text-sm text-[#999999] focus:outline-none focus:ring-0 focus:border-[#717070]";
 
@@ -14,6 +14,7 @@ const Login = () => {
 
   const { fetchFavorites } = useContext(FavoriteContext);
   const { fetchCart } = useContext(CartContext);
+  const { setToken } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -37,6 +38,8 @@ const Login = () => {
       // Save user + token
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data));
+
+      setToken(res.data.token);
 
       // Load favorites & cart immediately
       await fetchFavorites();

@@ -9,6 +9,7 @@ export default {
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],
         baloo: ["Baloo 2", "cursive"],
+        inter: ["Inter", "sans-serif"],
       },
     },
   },

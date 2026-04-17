@@ -8,17 +8,18 @@ import { toast } from "react-toastify";
 
 import { CartContext } from "./context/CartContext";
 import { FavoriteContext } from "./context/FavoriteContext";
+import { AuthContext } from "./context/AuthContext";
 
 const Navbar = () => {
-  const { cartItems, setCartItems, fetchCart } = useContext(CartContext);
-  const { favorites, setFavorites, fetchFavorites } = useContext(FavoriteContext);
+  const { cartItems, setCartItems } = useContext(CartContext);
+  const { favorites, setFavorites } = useContext(FavoriteContext);
+  const { token, setToken } = useContext(AuthContext);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const favoriteCount = favorites.length;
@@ -49,17 +50,18 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
+    setToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
-    // clear contexts
     setCartItems([]);
     setFavorites([]);
 
-    // close menu on mobile
-    setMenuOpen(false);
-
     navigate("/");
+  };
+
+  const handleUserClick = () => {
+    setUserMenuOpen(prev => !prev);
   };
 
   return (
@@ -70,7 +72,7 @@ const Navbar = () => {
         <img src={logo} alt="Petopia" className="w-[110px]" />
       </Link>
 
-      {/* Toggle button on right */}
+      {/* Toggle button */}
       <button
         className="md:hidden text-yellow-400 text-2xl"
         onClick={toggleMenu}
@@ -111,25 +113,45 @@ const Navbar = () => {
           )}
         </span>
 
-        {/* Auth */}
-        {token ? (
-          <button onClick={handleLogout} className="bg-login-btn px-4 py-1 rounded-full font-medium">
-            Logout
-          </button>
-        ) : (
-          <div className="relative">
-            <span onClick={() => setUserMenuOpen(prev => !prev)} className="bg-login-btn w-9 h-9 rounded-full flex items-center justify-center cursor-pointer">
-              <FaRegUser />
-            </span>
+        {/* User */}
+        <div className="relative">
+          <span
+            onClick={handleUserClick}
+            className="bg-login-btn w-9 h-9 rounded-full flex items-center justify-center cursor-pointer"
+          >
+            <FaRegUser />
+          </span>
 
-            {userMenuOpen && (
-              <div className="absolute right-0 mt-2 w-32 bg-white text-[#011749] rounded-xl shadow-lg flex flex-col">
-                <Link to="/login" className="px-4 py-2 hover:bg-gray-100">Login</Link>
-                <Link to="/signup" className="px-4 py-2 hover:bg-gray-100">Sign up</Link>
-              </div>
-            )}
-          </div>
-        )}
+          {userMenuOpen && (
+            <div className="absolute right-0 mt-2 w-36 bg-white text-[#011749] rounded-xl shadow-lg flex flex-col">
+
+              {!token ? (
+                <>
+                  <Link to="/login" className="px-4 py-2 hover:bg-gray-100">Login</Link>
+                  <Link to="/signup" className="px-4 py-2 hover:bg-gray-100">Sign up</Link>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => navigate("/admin/requests")}
+                    className="px-4 py-2 hover:bg-gray-100 text-left"
+                  >
+                    Dashboard
+                  </button>
+
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 hover:bg-gray-100 text-left text-red-500"
+                  >
+                    Logout
+                  </button>
+                </>
+              )}
+
+            </div>
+          )}
+        </div>
+
       </div>
 
       {/* Mobile Menu */}
@@ -142,46 +164,31 @@ const Navbar = () => {
       >
         <Link to="/" onClick={() => setMenuOpen(false)} className="text-lg text-white">Home</Link>
         <Link to="/shop" onClick={() => setMenuOpen(false)} className="text-lg text-white">Shop</Link>
-        <Link to="/adoption" className="text-white text-lg cursor-pointer">Adopt</Link>
-        <span className="text-white text-lg">Foster</span>
-        <span className="text-white text-lg">Sponsor</span>
-        <span className="text-white text-lg">Contact</span>
+        <Link to="/adoption" className="text-white text-lg">Adopt</Link>
 
         <hr className="w-[90%] border-gray-600" />
 
         <div className="flex gap-4">
-          {/* Cart */}
-          <button onClick={() => { handleCartClick(); setMenuOpen(false); }} className="relative bg-login-btn p-3 rounded-full">
-            <IoCartOutline className="text-white text-xl" />
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
+          <button onClick={() => { handleCartClick(); setMenuOpen(false); }} className="bg-login-btn p-3 rounded-full">
+            <IoCartOutline />
           </button>
 
-          {/* Fav */}
-          <button onClick={() => { handleFavoriteClick(); setMenuOpen(false); }} className="relative bg-[#E7A01C] p-3 rounded-full">
-            <IoHeartOutline className="text-white text-xl" />
-            {favoriteCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                {favoriteCount}
-              </span>
-            )}
+          <button onClick={() => { handleFavoriteClick(); setMenuOpen(false); }} className="bg-[#E7A01C] p-3 rounded-full">
+            <IoHeartOutline />
           </button>
 
-          {/* Auth */}
-          {token ? (
-            <button onClick={handleLogout} className="bg-login-btn px-5 py-2 rounded-full font-medium">
-              Logout
-            </button>
-          ) : (
-            <Link to="/login" onClick={() => setMenuOpen(false)} className="bg-login-btn px-5 py-2 rounded-full font-medium">
+          {!token ? (
+            <Link to="/login" className="bg-login-btn px-5 py-2 rounded-full">
               Login
             </Link>
+          ) : (
+            <button onClick={handleLogout} className="bg-login-btn px-5 py-2 rounded-full">
+              Logout
+            </button>
           )}
         </div>
       </div>
+
     </nav>
   );
 };

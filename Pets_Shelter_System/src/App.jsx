@@ -20,6 +20,9 @@ import Adoption from "./pages/Adoption";
 import AnimalDetails from "./pages/AnimalDetails";
 import AdoptMe from "./pages/AdoptMe";
 import ScrollToTop from "./components/ScrollTop";
+import AdminLayout from "./components/AdminLayout";
+import Request from "./pages/Admin/Request";
+import Users from './pages/Admin/Users'
 
 function App() {
   return (
@@ -63,6 +66,11 @@ function App() {
                     </AuthLayout>
                   }
                 />
+
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route path="requests" element={<Request />} />
+                  <Route path="users" element={<Users />} />
+                </Route>
               </Routes>
             </CheckoutContextProvider>
           </CartContextProvider>
