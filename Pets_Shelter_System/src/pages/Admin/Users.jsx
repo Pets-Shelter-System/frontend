@@ -4,6 +4,7 @@ import { AuthContext } from "../../components/context/AuthContext";
 import { IoIosSearch } from "react-icons/io";
 
 const BASE_URL = "http://petmarket.runasp.net/api/Admin/GetAllUsers";
+const IMG_BASE = "http://petmarket.runasp.net";
 
 const Users = () => {
   const { token } = useContext(AuthContext);
@@ -71,7 +72,7 @@ const Users = () => {
   };
 
   return (
-    <div className="max-w-[1100px] mx-auto font-inter tracking-wide">
+    <div className="max-w-[1100px] p-6  font-inter tracking-wide">
 
       {/* 🔥 Header */}
       <div className="mb-10">
@@ -86,36 +87,36 @@ const Users = () => {
 
       {/* 🔥 Search + Stats */}
       <div className="max-w-[650px] mx-auto mb-8">
-      
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
 
-        
-        {/* Search */}
-        <div className="col-span-2 bg-white text-[#C4C6CF] rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm">
-          <IoIosSearch />
-          <input
-            type="text"
-            placeholder="Search by name, email, or role..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            className="w-full outline-none text-sm font-inter"
-          />
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+
+
+          {/* Search */}
+          <div className="col-span-2 bg-white text-[#C4C6CF] rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm">
+            <IoIosSearch />
+            <input
+              type="text"
+              placeholder="Search by name, email, or role..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="w-full outline-none text-sm font-inter"
+            />
+          </div>
+
+          {/* Total Users */}
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <p className="text-xs text-gray-400 font-medium">
+              TOTAL USERS
+            </p>
+            <h2 className="text-2xl font-bold text-[#011749]">
+              {totalItems}
+            </h2>
+          </div>
+
         </div>
-
-        {/* Total Users */}
-        <div className="bg-white rounded-xl p-4 shadow-sm">
-          <p className="text-xs text-gray-400 font-medium">
-            TOTAL USERS
-          </p>
-          <h2 className="text-2xl font-bold text-[#011749]">
-            {totalItems}
-          </h2>
-        </div>
-
-      </div>
       </div>
 
       {/* 🔥 Table */}
@@ -144,8 +145,16 @@ const Users = () => {
 
                 {/* Profile */}
                 <td className="px-6 py-5">
-                  <div className="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center font-semibold">
-                    {getInitial(u)}
+                  <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-sm font-semibold text-[#011749]">
+                    {u.personalPicture ? (
+                      <img
+                        src={IMG_BASE + u.personalPicture}
+                        alt="user"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      getInitial(u)
+                    )}
                   </div>
                 </td>
 

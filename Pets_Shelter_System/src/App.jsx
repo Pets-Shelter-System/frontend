@@ -23,6 +23,11 @@ import ScrollToTop from "./components/ScrollTop";
 import AdminLayout from "./components/AdminLayout";
 import Request from "./pages/Admin/Request";
 import Users from './pages/Admin/Users'
+import Animals from "./pages/Admin/Animals";
+import EditAnimal from "./pages/Admin/EditAnimal";
+import AddAnimal from "./pages/Admin/AddAnimal";
+
+
 
 function App() {
   return (
@@ -70,6 +75,10 @@ function App() {
                 <Route path="/admin" element={<AdminLayout />}>
                   <Route path="requests" element={<Request />} />
                   <Route path="users" element={<Users />} />
+                  <Route path="animals" element={<Animals />} />
+                  <Route path="animals/edit/:id" element={<EditAnimal />} />
+                  <Route path="animals/add" element={<AddAnimal />} />
+
                 </Route>
               </Routes>
             </CheckoutContextProvider>
