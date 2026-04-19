@@ -3,7 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../components/context/AuthContext";
 import { IoArrowBack } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const BASE_URL = "http://petmarket.runasp.net/api/Animals";
 
@@ -100,13 +100,13 @@ const AddAnimal = () => {
             <div className="bg-white rounded-3xl shadow-sm p-6 font-inter tracking-wide text-[#011749]">
 
                 {/* Header */}
-                <div className="flex items-center gap-3 mb-8">
+                <Link to={'/admin/animals'}  className="flex items-center gap-3 mb-8">
                     <button className="p-2 rounded-full hover:bg-gray-100">
                         <IoArrowBack />
 
                     </button>
                     <h1 className="text-2xl font-semibold">Back to Animals</h1>
-                </div>
+                </Link>
 
                 <form className="space-y-10" onSubmit={handleSubmit} >
 

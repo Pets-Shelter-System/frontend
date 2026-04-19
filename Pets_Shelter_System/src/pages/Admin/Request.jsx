@@ -7,6 +7,7 @@ import { IoEyeOutline } from "react-icons/io5";
 const Request = () => {
     const { token } = useContext(AuthContext);
     const navigate = useNavigate();
+    const IMG_BASE = "http://petmarket.runasp.net";
 
     const [requests, setRequests] = useState([]);
     const [stats, setStats] = useState({
@@ -193,9 +194,11 @@ const Request = () => {
 
                                 {/* User */}
                                 <td className="py-3 flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs">
-                                        {item.applicantFirstName[0]}
-                                    </div>
+                                    <img
+                                        src={IMG_BASE + item.applicantPicture}
+                                        alt="user"
+                                        className="w-10 h-10 rounded-full object-cover"
+                                    />
 
                                     <div>
                                         <p className="font-medium">
@@ -255,7 +258,9 @@ const Request = () => {
 
                                 {/* Actions */}
                                 <td className="text-center">
-                                    <button className="text-[#011749] text-lg">
+                                    <button className="text-[#011749] text-lg" onClick={() =>
+                                        navigate(`/admin/requests/${item.animalName}`)
+                                    }>
                                         <IoEyeOutline />
                                     </button>
                                 </td>
