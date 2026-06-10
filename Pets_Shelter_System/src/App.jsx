@@ -27,6 +27,9 @@ import Animals from "./pages/Admin/Animals";
 import EditAnimal from "./pages/Admin/EditAnimal";
 import AddAnimal from "./pages/Admin/AddAnimal";
 import AnimalRequests from "./pages/Admin/AnimalRequests";
+import ManageShop from "./pages/Admin/ManageShop";
+import AddProduct from "./pages/Admin/AddProduct";
+
 
 
 function App() {
@@ -79,6 +82,11 @@ function App() {
                   <Route path="animals" element={<Animals />} />
                   <Route path="animals/edit/:id" element={<EditAnimal />} />
                   <Route path="animals/add" element={<AddAnimal />} />
+                  <Route path="shop" element={<ManageShop />} />
+                  <Route path="shop/add" element={<AddProduct />} />
+
+                  {/* <Route path="shop/product/:id" element={<AdminProductDetails />} /> */}
+
 
                 </Route>
               </Routes>

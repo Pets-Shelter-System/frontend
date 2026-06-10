@@ -6,6 +6,8 @@ import { AuthContext } from "./context/AuthContext";
 import { IoPawOutline, IoSettingsOutline, IoLogOutOutline } from "react-icons/io5";
 import { TbEdit, TbUsers } from "react-icons/tb";
 import { IoIosHelpCircleOutline, IoIosArrowForward } from "react-icons/io";
+import { HiOutlineShoppingBag } from "react-icons/hi";
+
 
 const AdminLayout = () => {
   const navigate = useNavigate();
@@ -75,9 +77,10 @@ const AdminLayout = () => {
                 <div className={`${getNavClass(isActive)} justify-between`}>
 
                   <span className="flex items-center gap-3">
-                    <span>🛒</span>
+                    <HiOutlineShoppingBag className={isActive ? "text-white" : "text-gray-500"} />
                     Manage Shop
                   </span>
+
 
                   {isActive && (
                     <IoIosArrowForward className="text-white text-lg" />
