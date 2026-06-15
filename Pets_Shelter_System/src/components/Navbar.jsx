@@ -13,10 +13,29 @@ import { AuthContext } from "./context/AuthContext";
 const Navbar = () => {
   const { cartItems, setCartItems } = useContext(CartContext);
   const { favorites, setFavorites } = useContext(FavoriteContext);
-  const { token, setToken } = useContext(AuthContext);
+  const { token, setToken, user } = useContext(AuthContext);
+  console.log(user)
+
+  // const imageUrl = user?.pictureUrl
+  //   ? `http://petmarket.runasp.net${user.personalPicture}?v=${Date.now()}`
+  //   : null;
+
+  // const avatarFallback =
+  //   user?.firstName?.charAt(0)?.toUpperCase() ||
+  //   user?.email?.charAt(0)?.toUpperCase() ||
+  //   "U";
+
+  const imageUrl = user?.pictureUrl
+    ? `http://petmarket.runasp.net${user.pictureUrl}?v=${Date.now()}`
+    : null;
+
+  const avatarFallback =
+    user?.firstName?.charAt(0)?.toUpperCase() ||
+    user?.username?.charAt(0)?.toUpperCase() ||
+    user?.email?.charAt(0)?.toUpperCase() ||
+    "U";
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -49,20 +68,65 @@ const Navbar = () => {
     navigate("/favorite");
   };
 
-  const handleLogout = () => {
-    setToken(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-
-    setCartItems([]);
-    setFavorites([]);
-
-    navigate("/");
-  };
-
   const handleUserClick = () => {
-    setUserMenuOpen(prev => !prev);
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    const rawRole =
+      user?.role ||
+      user?.roles?.[0] ||
+      user?.userRole ||
+      user?.Role ||
+      "";
+
+    const role = String(rawRole).toLowerCase();
+
+    if (role === "admin") {
+      navigate("/admin/users");
+    } else {
+      navigate("/profile");
+    }
   };
+
+  const renderAvatar = (size = "40px") => (
+    <button
+      onClick={() => { handleUserClick(); setMenuOpen(false); }}
+      className={`
+        rounded-full
+        overflow-hidden
+        cursor-pointer
+        border-2
+        border-white/20
+        shadow-md
+        hover:scale-105
+        transition
+        bg-[#EDEDED]
+        flex
+        items-center
+        justify-center
+        shrink-0
+      `}
+      style={{ width: size, height: size }}
+    >
+      {imageUrl ? (
+        <img
+          src={imageUrl}
+          alt="Profile"
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            e.currentTarget.style.display = "none";
+            e.currentTarget.parentElement.innerHTML = `<span class="text-[#011749] font-bold text-sm">${avatarFallback}</span>`;
+          }}
+        />
+      ) : (
+        <span className="text-[#011749] font-bold text-sm">
+          {avatarFallback}
+        </span>
+      )}
+    </button>
+  );
 
   return (
     <nav className="bg-[#011749] text-white px-6 flex items-center justify-between fixed top-0 left-0 w-full z-50 h-[65px]">
@@ -85,7 +149,7 @@ const Navbar = () => {
         <li><Link to="/" className={`px-4 py-1 rounded-full font-medium ${location.pathname === "/" ? "bg-login-btn" : ""}`}>Home</Link></li>
         <li><Link to="/shop" className={`px-4 py-1 rounded-full font-medium ${location.pathname === "/shop" ? "bg-login-btn" : ""}`}>Shop</Link></li>
         <li><Link to="/adoption" className={`px-4 py-1 rounded-full font-medium ${location.pathname.startsWith("/adoption") ? "bg-login-btn" : ""}`}>Adopt</Link></li>
-        <li><span className="font-medium">Foster</span></li>
+        <li><Link to="/foster" className={`px-4 py-1 rounded-full font-medium ${location.pathname.startsWith("/foster") ? "bg-login-btn" : ""}`}>Foster</Link></li>
         <li><span className="font-medium">Sponsor</span></li>
         <li><span className="font-medium">Contact</span></li>
       </ul>
@@ -113,44 +177,17 @@ const Navbar = () => {
           )}
         </span>
 
-        {/* User */}
-        <div className="relative">
+        {/* User Avatar */}
+        {token ? (
+          renderAvatar("40px")
+        ) : (
           <span
-            onClick={handleUserClick}
-            className="bg-login-btn w-9 h-9 rounded-full flex items-center justify-center cursor-pointer"
+            onClick={() => navigate("/login")}
+            className="bg-login-btn w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:scale-105 transition"
           >
             <FaRegUser />
           </span>
-
-          {userMenuOpen && (
-            <div className="absolute right-0 mt-2 w-36 bg-white text-[#011749] rounded-xl shadow-lg flex flex-col">
-
-              {!token ? (
-                <>
-                  <Link to="/login" className="px-4 py-2 hover:bg-gray-100">Login</Link>
-                  <Link to="/signup" className="px-4 py-2 hover:bg-gray-100">Sign up</Link>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => navigate("/admin/requests")}
-                    className="px-4 py-2 hover:bg-gray-100 text-left"
-                  >
-                    Dashboard
-                  </button>
-
-                  <button
-                    onClick={handleLogout}
-                    className="px-4 py-2 hover:bg-gray-100 text-left text-red-500"
-                  >
-                    Logout
-                  </button>
-                </>
-              )}
-
-            </div>
-          )}
-        </div>
+        )}
 
       </div>
 
@@ -164,27 +201,31 @@ const Navbar = () => {
       >
         <Link to="/" onClick={() => setMenuOpen(false)} className="text-lg text-white">Home</Link>
         <Link to="/shop" onClick={() => setMenuOpen(false)} className="text-lg text-white">Shop</Link>
-        <Link to="/adoption" className="text-white text-lg">Adopt</Link>
+        <Link to="/adoption" onClick={() => setMenuOpen(false)} className="text-white text-lg">Adopt</Link>
+        <Link to="/foster" onClick={() => setMenuOpen(false)} className="text-white text-lg">Foster</Link>
 
         <hr className="w-[90%] border-gray-600" />
 
-        <div className="flex gap-4">
-          <button onClick={() => { handleCartClick(); setMenuOpen(false); }} className="bg-login-btn p-3 rounded-full">
-            <IoCartOutline />
+        <div className="flex items-center gap-4">
+          <button onClick={() => { handleCartClick(); setMenuOpen(false); }} className="bg-login-btn p-3 rounded-full relative">
+            <IoCartOutline className="text-white text-xl" />
+            {cartCount > 0 && <span className="absolute -top-1 -right-1 bg-red-600 text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>}
           </button>
 
-          <button onClick={() => { handleFavoriteClick(); setMenuOpen(false); }} className="bg-[#E7A01C] p-3 rounded-full">
-            <IoHeartOutline />
+          <button onClick={() => { handleFavoriteClick(); setMenuOpen(false); }} className="bg-[#E7A01C] p-3 rounded-full relative">
+            <IoHeartOutline className="text-white text-lg" />
+            {favoriteCount > 0 && <span className="absolute -top-1 -right-1 bg-red-600 text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{favoriteCount}</span>}
           </button>
 
-          {!token ? (
-            <Link to="/login" className="bg-login-btn px-5 py-2 rounded-full">
+          {token ? (
+            <div className="flex items-center gap-2">
+              {renderAvatar("45px")}
+              <span className="text-sm font-medium text-white/80">{user?.username || user?.firstName}</span>
+            </div>
+          ) : (
+            <Link to="/login" onClick={() => setMenuOpen(false)} className="bg-login-btn px-6 py-2 rounded-full font-bold">
               Login
             </Link>
-          ) : (
-            <button onClick={handleLogout} className="bg-login-btn px-5 py-2 rounded-full">
-              Logout
-            </button>
           )}
         </div>
       </div>

@@ -14,7 +14,7 @@ const Login = () => {
 
   const { fetchFavorites } = useContext(FavoriteContext);
   const { fetchCart } = useContext(CartContext);
-  const { setToken } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -35,11 +35,8 @@ const Login = () => {
         return;
       }
 
-      // Save user + token
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data));
-
-      setToken(res.data.token);
+      // Use the centralized login method
+      login(res.data);
 
       // Load favorites & cart immediately
       await fetchFavorites();

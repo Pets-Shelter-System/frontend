@@ -49,6 +49,7 @@ export default function AuthContextProvider({ children }) {
             value={{
                 token,
                 user,
+                setUser,
                 userId,
                 isAuthenticated,
                 login,

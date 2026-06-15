@@ -29,8 +29,14 @@ import AddAnimal from "./pages/Admin/AddAnimal";
 import AnimalRequests from "./pages/Admin/AnimalRequests";
 import ManageShop from "./pages/Admin/ManageShop";
 import AddProduct from "./pages/Admin/AddProduct";
+import Foster from "./pages/Foster";
+import FosterDetails from "./pages/FosterDetails";
+import FosterMe from "./pages/FosterMe";
+import Profile from "./pages/Profile";
 
 
+
+import ProfileLayout from "./components/ProfileLayout";
 
 function App() {
   return (
@@ -54,6 +60,13 @@ function App() {
                   <Route path="/adoption" element={<Adoption />} />
                   <Route path="/adoption/:id" element={<AnimalDetails />} />
                   <Route path="/adoption/:id/adopt-me" element={<AdoptMe />} />
+                  <Route path="/foster" element={<Foster />} />
+                  <Route path="/foster/:id" element={<FosterDetails />} />
+                  <Route path="/foster/:id/foster-me" element={<FosterMe />} />
+
+                  <Route path="/profile" element={<ProfileLayout />}>
+                    <Route index element={<Profile />} />
+                  </Route>
 
                 </Route>
 
