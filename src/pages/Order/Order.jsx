@@ -1,9 +1,9 @@
 import { useState } from "react";
-import OrderAddress from "./steps/orderAddress";
-import OrderSummary from './components/orderSummary';
-import OrderShipping from "./steps/orderShipping";
-import OrderPayment from "./steps/orderPayment";
-import OrderConfirmation from "./steps/orderConfirmation";
+import OrderAddress from "./steps/OrderAddress";
+import OrderSummary from './components/OrderSummary';
+import OrderShipping from "./steps/OrderShipping";
+import OrderPayment from "./steps/OrderPayment";
+import OrderConfirmation from "./steps/OrderConfirmation";
 
 const Order = () => {
     const [step, setStep] = useState(1);

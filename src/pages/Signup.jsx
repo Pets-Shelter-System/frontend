@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import api from "../api/api";
+import api from "../API/api";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
