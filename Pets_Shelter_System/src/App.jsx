@@ -33,6 +33,8 @@ import Foster from "./pages/Foster";
 import FosterDetails from "./pages/FosterDetails";
 import FosterMe from "./pages/FosterMe";
 import Profile from "./pages/Profile";
+import UserApplications from "./pages/UserApplications";
+import ApplicationDetails from "./pages/ApplicationDetails";
 
 
 
@@ -66,6 +68,8 @@ function App() {
 
                   <Route path="/profile" element={<ProfileLayout />}>
                     <Route index element={<Profile />} />
+                    <Route path="applications" element={<UserApplications />} />
+                    <Route path="applications/:id" element={<ApplicationDetails />} />
                   </Route>
 
                 </Route>

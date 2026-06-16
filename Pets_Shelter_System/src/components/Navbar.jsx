@@ -14,7 +14,7 @@ const Navbar = () => {
   const { cartItems, setCartItems } = useContext(CartContext);
   const { favorites, setFavorites } = useContext(FavoriteContext);
   const { token, setToken, user } = useContext(AuthContext);
-  console.log(user)
+  // console.log(user)
 
   // const imageUrl = user?.pictureUrl
   //   ? `http://petmarket.runasp.net${user.personalPicture}?v=${Date.now()}`

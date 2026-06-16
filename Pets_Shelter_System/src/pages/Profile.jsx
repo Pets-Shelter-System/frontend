@@ -1,5 +1,7 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { AuthContext } from "../components/context/AuthContext";
+import { CartContext } from "../components/context/CartContext";
+import { FavoriteContext } from "../components/context/FavoriteContext";
 import { useNavigate } from "react-router-dom";
 import api from "../API/api";
 import Swal from "sweetalert2";
@@ -26,7 +28,9 @@ import {
 import { FaCamera } from "react-icons/fa";
 
 const Profile = () => {
-    const { token, user, setUser } = useContext(AuthContext);
+    const { token, user, setUser, logout } = useContext(AuthContext);
+    const { setCartItems } = useContext(CartContext);
+    const { setFavorites } = useContext(FavoriteContext);
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
 
@@ -57,9 +61,9 @@ const Profile = () => {
     });
 
     const [resetForm, setResetForm] = useState({
-        email: "",
-        token: "",
-        password: ""
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: ""
     });
 
     const [selectedImage, setSelectedImage] = useState(null);
@@ -156,40 +160,78 @@ const Profile = () => {
     // --- Reset Password Actions ---
     const handleOpenResetModal = () => {
         setResetForm({
-            email: profileData?.email || "",
-            token: "",
-            password: ""
+            oldPassword: "",
+            newPassword: "",
+            confirmPassword: ""
         });
         setIsResetPasswordOpen(true);
     };
 
     const passwordValidations = {
-        length: resetForm.password.length >= 12,
-        special: /[!@#$%^&*(),.?":{}|<>]/.test(resetForm.password)
+        length: resetForm.newPassword.length >= 12,
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(resetForm.newPassword)
     };
 
     const handleResetPassword = async (e) => {
         e.preventDefault();
-        if (!resetForm.token || !resetForm.password || !passwordValidations.length || !passwordValidations.special) {
-            Swal.fire({ icon: "warning", title: "Invalid Input", text: "Please check your token and password requirements." });
+
+        // 1. All fields required
+        if (!resetForm.oldPassword || !resetForm.newPassword || !resetForm.confirmPassword) {
+            Swal.fire({ icon: "warning", title: "Missing Fields", text: "Please fill in all password fields." });
+            return;
+        }
+
+        // 2. newPassword === confirmPassword
+        if (resetForm.newPassword !== resetForm.confirmPassword) {
+            Swal.fire({ icon: "warning", title: "Validation Error", text: "New password and confirmation do not match" });
+            return;
+        }
+
+        // 3. Complexity validation (keeping existing one)
+        if (!passwordValidations.length || !passwordValidations.special) {
+            Swal.fire({ icon: "warning", title: "Weak Password", text: "Please meet the password requirements." });
             return;
         }
 
         setResetLoading(true);
         try {
-            await api.post("/Account/reset-password", {
-                email: resetForm.email,
-                token: resetForm.token,
-                password: resetForm.password
+            await api.post("/Account/forget-password", {
+                oldPassword: resetForm.oldPassword,
+                newPassword: resetForm.newPassword,
+                confirmPassword: resetForm.confirmPassword
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            Swal.fire({ icon: "success", title: "Success", text: "Password reset successful", timer: 2000, showConfirmButton: false });
+            Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: "Password updated successfully. Please login again.",
+                timer: 3000,
+                showConfirmButton: false
+            });
+
             setIsResetPasswordOpen(false);
-            setResetForm({ email: "", token: "", password: "" });
+
+            // Success Flow: logout, clear states, navigate
+            setTimeout(() => {
+                logout();
+                setCartItems([]);
+                setFavorites([]);
+                navigate("/login");
+            }, 1000);
+
         } catch (err) {
-            Swal.fire({ icon: "error", title: "Error", text: err.response?.data?.message || "Failed to reset password" });
+            if (err.response?.data?.message?.toLowerCase().includes("old password") ||
+                err.response?.data?.message === "Old password invalid") {
+                Swal.fire({ icon: "warning", title: "Access Denied", text: "Old password is incorrect" });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Update Failed",
+                    text: err.response?.data?.message || "Something went wrong while updating password"
+                });
+            }
         } finally {
             setResetLoading(false);
         }
@@ -353,7 +395,7 @@ const Profile = () => {
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <ActionCard icon={<IoBasketOutline />} title="Orders" description="Track your recent pet shop orders" onClick={() => navigate("/order")} />
-                            <ActionCard icon={<IoDocumentTextOutline />} title="Applications" description="Check status of adoption forms" />
+                            <ActionCard icon={<IoDocumentTextOutline />} title="Applications" description="Check status of adoption forms" onClick={() => navigate("/profile/applications")} />
                             <ActionCard icon={<IoPawOutline />} title="My Animals" description="View animals you have adopted" onClick={() => navigate("/adoption")} />
                             <ActionCard icon={<IoKeyOutline />} title="Reset Password" description="Update security credentials" onClick={handleOpenResetModal} />
                         </div>
@@ -426,20 +468,52 @@ const Profile = () => {
                             <p className="text-gray-400 text-sm mt-1">Please enter your new credentials below.</p>
                         </div>
                         <form onSubmit={handleResetPassword} className="space-y-6">
-                            <FormInput label="Email" value={resetForm.email} onChange={() => { }} icon={<IoMailOutline />} />
-                            <FormInput label="Reset Token" value={resetForm.token} onChange={(v) => setResetForm({ ...resetForm, token: v })} icon={<IoShieldCheckmarkOutline />} />
                             <div className="relative">
-                                <FormInput label="New Password" type={showPassword ? "text" : "password"} value={resetForm.password} onChange={(v) => setResetForm({ ...resetForm, password: v })} icon={<IoKeyOutline />} />
-                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-[38px] text-gray-400">
+                                <FormInput
+                                    label="Old Password"
+                                    type={showPassword ? "text" : "password"}
+                                    value={resetForm.oldPassword}
+                                    onChange={(v) => setResetForm({ ...resetForm, oldPassword: v })}
+                                    icon={<IoKeyOutline />}
+                                />
+                            </div>
+                            <div className="relative">
+                                <FormInput
+                                    label="New Password"
+                                    type={showPassword ? "text" : "password"}
+                                    value={resetForm.newPassword}
+                                    onChange={(v) => setResetForm({ ...resetForm, newPassword: v })}
+                                    icon={<IoShieldCheckmarkOutline />}
+                                />
+                            </div>
+                            <div className="relative">
+                                <FormInput
+                                    label="Confirm New Password"
+                                    type={showPassword ? "text" : "password"}
+                                    value={resetForm.confirmPassword}
+                                    onChange={(v) => setResetForm({ ...resetForm, confirmPassword: v })}
+                                    icon={<IoKeyOutline />}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-4 top-[38px] text-gray-400 hover:text-[#011749] transition-colors"
+                                >
                                     {showPassword ? <IoEyeOffOutline size={20} /> : <IoEyeOutline size={20} />}
                                 </button>
                             </div>
+
                             <div className="bg-[#f8f9fb] p-6 rounded-2xl space-y-3">
                                 <ValidationItem label="At least 12 characters" passed={passwordValidations.length} />
                                 <ValidationItem label="One specialized character" passed={passwordValidations.special} />
                             </div>
-                            <button type="submit" disabled={resetLoading} className="w-full bg-[#011749] text-white py-4 rounded-2xl font-bold shadow-xl disabled:opacity-50">
-                                {resetLoading ? "Resetting..." : "Reset Password"}
+
+                            <button
+                                type="submit"
+                                disabled={resetLoading}
+                                className="w-full bg-[#011749] text-white py-4 rounded-2xl font-bold shadow-xl disabled:opacity-50 hover:opacity-90 transition-all active:scale-[0.98]"
+                            >
+                                {resetLoading ? "Updating..." : "Update Password"}
                             </button>
                         </form>
                     </div>

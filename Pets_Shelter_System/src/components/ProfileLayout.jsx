@@ -27,7 +27,7 @@ const ProfileLayout = () => {
     return (
         <div className="bg-[#F6F7F9] min-h-screen">
             <Navbar />
-           <div className="flex flex-col md:flex-row items-start pt-[65px] px-5 min-h-screen max-w-[1440px] mx-auto">
+            <div className="flex flex-col md:flex-row items-start pt-[65px] px-5 min-h-screen max-w-[1440px] mx-auto">
                 {/* Sidebar / Navigation Card */}
                 <div className="w-full md:w-[280px] lg:w-[302px] pt-6 shrink-0">
                     <div
