@@ -5,7 +5,7 @@ import Signup from "./pages/Signup";
 import Layout from "./components/Layout";
 import AuthLayout from "./components/AuthLayout";
 import Shop from "./pages/Shop";
-import Cart from "./pages/cart";
+import Cart from "./pages/Cart";
 import ProductDetails from "./pages/ProductDetails";
 import CartContextProvider from "./components/context/CartContext";
 
