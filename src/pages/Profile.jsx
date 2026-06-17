@@ -22,7 +22,8 @@ import {
     IoEyeOutline,
     IoEyeOffOutline,
     IoCheckmarkCircleOutline,
-    IoCloudUploadOutline
+    IoCloudUploadOutline,
+    IoTrashOutline
 } from "react-icons/io5";
 
 import { FaCamera } from "react-icons/fa";
@@ -45,7 +46,9 @@ const Profile = () => {
     // Loading States
     const [isSaving, setIsSaving] = useState(false);
     const [resetLoading, setResetLoading] = useState(false);
-    const [uploadLoading, setUploadLoading] = useState(false);
+    const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+    const [isDeletingPhoto, setIsDeletingPhoto] = useState(false);
+    const [isFetchingPhoto, setIsFetchingPhoto] = useState(false);
 
     // Form states
     const [editForm, setEditForm] = useState({
@@ -68,6 +71,8 @@ const Profile = () => {
 
     const [selectedImage, setSelectedImage] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
+    const [activeTab, setActiveTab] = useState("upload");
+    const [photoVersion, setPhotoVersion] = useState(Date.now());
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -79,6 +84,16 @@ const Profile = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setProfileData(res.data);
+
+            // Sync context user
+            const updatedUser = {
+                ...user,
+                ...res.data,
+                pictureUrl: res.data.personalPicture // Navbar uses pictureUrl
+            };
+            setUser(updatedUser);
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+
         } catch (err) {
             console.error("Failed to fetch user info", err);
         } finally {
@@ -89,6 +104,48 @@ const Profile = () => {
     useEffect(() => {
         fetchUserInfo();
     }, [token]);
+
+    const fetchCurrentPhoto = async () => {
+        if (!token) return;
+        setIsFetchingPhoto(true);
+        try {
+            const res = await api.get("/Account/picture", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            // Update profileData with fresh picture info
+            if (res.data) {
+                const picturePath = typeof res.data === 'string'
+                    ? res.data
+                    : res.data.personalPicture;
+
+                if (picturePath && typeof picturePath === 'string') {
+                    const freshInfo = {
+                        ...profileData,
+                        personalPicture: picturePath
+                    };
+                    setProfileData(freshInfo);
+
+                    // Sync context
+                    const updatedUser = {
+                        ...user,
+                        pictureUrl: picturePath
+                    };
+                    setUser(updatedUser);
+                    localStorage.setItem("user", JSON.stringify(updatedUser));
+                }
+            }
+        } catch (err) {
+            console.error("Failed to fetch photo", err);
+        } finally {
+            setIsFetchingPhoto(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isPhotoModalOpen && activeTab === "view") {
+            fetchCurrentPhoto();
+        }
+    }, [isPhotoModalOpen, activeTab]);
 
     // --- Profile Edit Actions ---
     const handleOpenEditModal = () => {
@@ -129,24 +186,7 @@ const Profile = () => {
             });
 
             // Refetch fresh data
-            const res = await api.get("/Account/userinfo", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            setProfileData(res.data);
-
-            // Sync user safely
-            const updatedUser = {
-                ...user,
-                ...res.data
-            };
-
-            localStorage.setItem(
-                "user",
-                JSON.stringify(updatedUser)
-            );
-
-            setUser(updatedUser);
+            await fetchUserInfo();
 
             setIsEditModalOpen(false);
             Swal.fire({ icon: "success", title: "Profile Updated", timer: 2000, showConfirmButton: false });
@@ -248,7 +288,7 @@ const Profile = () => {
 
     const handleUploadPhoto = async () => {
         if (!selectedImage) return;
-        setUploadLoading(true);
+        setIsUploadingPhoto(true);
         try {
             const formData = new FormData();
             formData.append("Picture", selectedImage);
@@ -260,33 +300,46 @@ const Profile = () => {
                 }
             });
 
-            const res = await api.get("/Account/userinfo", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setProfileData(res.data);
-
-            // Sync user safely
-            const updatedUser = {
-                ...user,
-                ...res.data
-            };
-
-            localStorage.setItem(
-                "user",
-                JSON.stringify(updatedUser)
-            );
-
-            setUser(updatedUser);
+            await fetchUserInfo();
 
             Swal.fire({ icon: "success", title: "Updated", text: "Profile picture updated!", timer: 2000, showConfirmButton: false });
             setIsPhotoModalOpen(false);
+            // Reset modal states
             setSelectedImage(null);
             setPreviewUrl(null);
+            setPhotoVersion(Date.now());
+            setActiveTab("upload");
         } catch (err) {
             Swal.fire({ icon: "error", title: "Failed", text: err.response?.data?.message || "Failed to update picture" });
         } finally {
-            setUploadLoading(false);
+            setIsUploadingPhoto(false);
         }
+    };
+
+    const handleDeletePhoto = async () => {
+        setIsDeletingPhoto(true);
+        try {
+            await api.delete("/Account/picture", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            await fetchUserInfo();
+
+            setPhotoVersion(Date.now());
+            // Switch to view tab as requested
+            setActiveTab("view");
+        } catch (err) {
+            Swal.fire({ icon: "error", title: "Failed", text: err.response?.data?.message || "Failed to delete picture" });
+        } finally {
+            setIsDeletingPhoto(false);
+        }
+    };
+
+    const handleClosePhotoModal = () => {
+        setIsPhotoModalOpen(false);
+        setSelectedImage(null);
+        setPreviewUrl(null);
+        setActiveTab("upload");
     };
 
     if (loading) {
@@ -308,8 +361,11 @@ const Profile = () => {
     const role = profileData.roles?.[0] || "Customer";
     const username = profileData.userName ? `@${profileData.userName}` : `@user`;
 
-    const imageUrl = profileData?.personalPicture
-        ? `http://petmarket.runasp.net${profileData.personalPicture}?v=${Date.now()}`
+    const imageUrl = (profileData?.personalPicture && typeof profileData.personalPicture === "string")
+        ? (profileData.personalPicture.startsWith("http")
+            ? profileData.personalPicture
+            : `http://petmarket.runasp.net${profileData.personalPicture}`) +
+        `${profileData.personalPicture.includes('?') ? '&' : '?'}v=${photoVersion}`
         : null;
 
     const avatar = imageUrl ? (
@@ -394,7 +450,7 @@ const Profile = () => {
                             <h2 className="text-xl font-bold text-[#011749]">Quick Actions</h2>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <ActionCard icon={<IoBasketOutline />} title="Orders" description="Track your recent pet shop orders" onClick={() => navigate("/order")} />
+                            <ActionCard icon={<IoBasketOutline />} title="Orders" description="Track your recent pet shop orders" onClick={() => navigate("/profile/orders")} />
                             <ActionCard icon={<IoDocumentTextOutline />} title="Applications" description="Check status of adoption forms" onClick={() => navigate("/profile/applications")} />
                             <ActionCard icon={<IoPawOutline />} title="My Animals" description="View animals you have adopted" onClick={() => navigate("/adoption")} />
                             <ActionCard icon={<IoKeyOutline />} title="Reset Password" description="Update security credentials" onClick={handleOpenResetModal} />
@@ -520,43 +576,162 @@ const Profile = () => {
                 </div>
             )}
 
-            {/* PHOTO UPLOAD MODAL */}
+            {/* PHOTO UPLOAD MODAL (ENHANCED) */}
             {isPhotoModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsPhotoModalOpen(false)}></div>
-                    <div className="bg-white rounded-[32px] w-full max-w-[450px] relative z-10 shadow-2xl p-8 flex flex-col items-center">
-                        <div className="w-full flex justify-between items-start mb-6">
-                            <h2 className="text-xl font-bold text-[#011749]">Update Profile Picture</h2>
-                            <button onClick={() => setIsPhotoModalOpen(false)} className="text-gray-400 hover:text-gray-600"><IoCloseOutline size={28} /></button>
-                        </div>
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClosePhotoModal}></div>
+                    <div className="bg-white rounded-[32px] w-full max-w-[700px] relative z-10 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
 
-                        <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-gray-50 shadow-inner mb-6 bg-gray-50 flex items-center justify-center">
-                            {previewUrl ? (
-                                <img src={previewUrl} className="w-full h-full object-cover" alt="Preview" />
-                            ) : avatar}
-                        </div>
-
-                        <div
-                            onClick={() => fileInputRef.current?.click()}
-                            className="w-full border-2 border-dashed border-gray-200 rounded-2xl p-8 flex flex-col items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors mb-6"
-                        >
-                            <IoCloudUploadOutline size={32} className="text-gray-400" />
-                            <p className="text-sm font-medium text-gray-400 text-center">
-                                <span className="text-[#011749] font-bold">Click to upload</span> or drag and drop<br />
-                                JPG, JPEG, or PNG formats
-                            </p>
-                            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
-                        </div>
-
-                        <div className="w-full grid grid-cols-2 gap-4">
-                            <button onClick={() => setIsPhotoModalOpen(false)} className="py-3 text-gray-500 font-bold border-2 border-transparent hover:bg-gray-50 rounded-xl">Cancel</button>
-                            <button
-                                onClick={handleUploadPhoto}
-                                disabled={!selectedImage || uploadLoading}
-                                className="bg-[#011749] text-white py-3 rounded-xl font-bold shadow-lg shadow-[#01174920] disabled:opacity-50"
-                            >
-                                {uploadLoading ? "Uploading..." : "Save Photo"}
+                        {/* Fixed Header */}
+                        <div className="p-8 pb-4 flex justify-between items-start shrink-0">
+                            <div>
+                                <h2 className="text-2xl font-bold text-[#011749]">Update Profile Picture</h2>
+                                <p className="text-gray-400 text-sm mt-1">Upload a new photo, view your current picture, or remove it.</p>
+                            </div>
+                            <button onClick={handleClosePhotoModal} className="text-gray-400 hover:text-gray-600 transition-colors shrink-0">
+                                <IoCloseOutline size={28} />
                             </button>
+                        </div>
+
+                        {/* Scrollable Body */}
+                        <div className="flex-1 overflow-y-auto px-8 py-2 custom-scrollbar flex flex-col items-center">
+
+                            {/* Avatar Preview */}
+                            <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-gray-50 shadow-inner mb-8 bg-gray-50 flex items-center justify-center shrink-0">
+                                {previewUrl ? (
+                                    <img src={previewUrl} className="w-full h-full object-cover" alt="Preview" />
+                                ) : (profileData?.personalPicture && typeof profileData.personalPicture === "string") ? (
+                                    <img
+                                        src={(profileData.personalPicture.startsWith("http")
+                                            ? profileData.personalPicture
+                                            : `http://petmarket.runasp.net${profileData.personalPicture}`) +
+                                            `${profileData.personalPicture.includes('?') ? '&' : '?'}v=${photoVersion}`}
+                                        className="w-full h-full object-cover"
+                                        alt="Current Profile"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full bg-[#011749] text-white flex items-center justify-center text-5xl font-bold">
+                                        {profileData.firstName?.[0]?.toUpperCase() || "U"}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Tab Switcher (Applications Style Segmented) */}
+                            <div className="w-full flex p-1 bg-[#F6F7F9] rounded-2xl mb-8 border border-gray-100 shrink-0">
+                                {[
+                                    { id: "upload", label: "Upload Photo", icon: <IoCloudUploadOutline /> },
+                                    { id: "view", label: "View Photo", icon: <IoEyeOutline /> },
+                                    { id: "delete", label: "Delete Photo", icon: <IoTrashOutline className="text-red-500" /> }
+                                ].map((tab) => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-bold text-sm ${activeTab === tab.id
+                                            ? "bg-[#011749] text-white shadow-lg"
+                                            : "text-gray-400 hover:text-gray-600"
+                                            }`}
+                                    >
+                                        <span className={activeTab === tab.id ? "text-white" : tab.id === "delete" ? "text-red-500" : ""}>
+                                            {tab.id === "delete" && activeTab !== "delete" ? <IoTrashOutline /> : tab.icon}
+                                        </span>
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Tab Content */}
+                            <div className="w-full flex-1 pb-6 py-4">
+                                {activeTab === "upload" && (
+                                    <div
+                                        onClick={() => !isUploadingPhoto && fileInputRef.current?.click()}
+                                        className={`w-full border-2 border-dashed rounded-3xl p-10 flex flex-col items-center gap-4 cursor-pointer transition-all ${isUploadingPhoto ? "opacity-50 cursor-not-allowed" : "border-gray-200 hover:bg-gray-50 hover:border-[#011749]"
+                                            }`}
+                                    >
+                                        <IoCloudUploadOutline size={40} className="text-gray-300" />
+                                        <div className="text-center">
+                                            <p className="text-base font-bold text-[#011749]">Click to upload <span className="font-normal text-gray-400">or drag and drop</span></p>
+                                            <p className="text-xs text-gray-400 mt-1">JPG, JPEG, or PNG formats</p>
+                                        </div>
+                                        <button className="bg-[#011749] text-white px-6 py-2 rounded-xl text-sm font-bold mt-2">Choose File</button>
+                                        <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} disabled={isUploadingPhoto} />
+                                    </div>
+                                )}
+
+                                {activeTab === "view" && (
+                                    <div className="w-full flex flex-col items-center gap-6">
+                                        {isFetchingPhoto ? (
+                                            <div className="animate-pulse flex flex-col items-center gap-2">
+                                                <div className="w-12 h-12 bg-gray-100 rounded-full" />
+                                                <p className="text-xs text-gray-400">Loading your photo...</p>
+                                            </div>
+                                        ) : profileData?.personalPicture ? (
+                                            <div className="w-full space-y-6 text-center">
+                                                <p className="text-sm font-medium text-gray-500 italic">Your profile picture is visible to other users.</p>
+                                                <div className="flex gap-4">
+                                                    <button onClick={() => setActiveTab("upload")} className="flex-1 py-3 text-[#011749] font-bold border-2 border-gray-100 rounded-2xl hover:bg-gray-50 transition-all text-sm">Replace Photo</button>
+                                                    <button onClick={() => setActiveTab("delete")} className="flex-1 py-3 text-red-500 font-bold border-2 border-red-50 rounded-2xl hover:bg-red-50 transition-all text-sm">Delete Photo</button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="text-center space-y-2">
+                                                <p className="text-xl font-bold text-[#011749]">No profile picture available</p>
+                                                <p className="text-sm text-gray-400">Upload a photo to help others recognize you.</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {activeTab === "delete" && (
+                                    <div className="w-full bg-red-50/30 border border-red-100 rounded-3xl p-8 flex flex-col items-center text-center space-y-4">
+                                        <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center text-red-500">
+                                            <IoTrashOutline size={32} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-lg font-bold text-[#011749]">Remove current photo?</h4>
+                                            <p className="text-sm text-gray-500 mt-1">You can upload a new one anytime.</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Sticky Footer */}
+                        <div className="p-8 pt-6 border-t border-gray-50 sticky bottom-0 bg-white grid grid-cols-2 gap-4 shrink-0">
+                            <button
+                                onClick={handleClosePhotoModal}
+                                className="py-4 text-gray-500 font-bold hover:bg-gray-50 rounded-2xl transition-all"
+                            >
+                                Cancel
+                            </button>
+
+                            {activeTab === "upload" && (
+                                <button
+                                    onClick={handleUploadPhoto}
+                                    disabled={!selectedImage || isUploadingPhoto}
+                                    className="bg-[#011749] text-white py-4 rounded-2xl font-bold shadow-xl shadow-[#01174920] disabled:opacity-50  transition-all"
+                                >
+                                    {isUploadingPhoto ? "Uploading..." : "Save Photo"}
+                                </button>
+                            )}
+
+                            {activeTab === "delete" && (
+                                <button
+                                    onClick={handleDeletePhoto}
+                                    disabled={!profileData?.personalPicture || isDeletingPhoto}
+                                    className="bg-red-500 text-white py-4 rounded-2xl font-bold shadow-xl shadow-red-200 disabled:opacity-50 transition-all"
+                                >
+                                    {isDeletingPhoto ? "Deleting..." : "Delete Photo"}
+                                </button>
+                            )}
+
+                            {activeTab === "view" && (
+                                <button
+                                    onClick={handleClosePhotoModal}
+                                    className="bg-[#011749] text-white py-4 rounded-2xl font-bold shadow-xl shadow-[#01174920] transition-all"
+                                >
+                                    Close Modal
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

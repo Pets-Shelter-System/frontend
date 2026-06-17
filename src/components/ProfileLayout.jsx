@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import { AuthContext } from "./context/AuthContext";
 import { CartContext } from "./context/CartContext";
@@ -9,6 +9,7 @@ import { IoIosHelpCircleOutline, IoIosArrowForward } from "react-icons/io";
 
 const ProfileLayout = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { logout, user } = useContext(AuthContext);
     const { setCartItems } = useContext(CartContext);
     const { setFavorites } = useContext(FavoriteContext);
@@ -53,29 +54,49 @@ const ProfileLayout = () => {
                         {/* Navigation Items */}
                         <div className="flex flex-col sm:flex-row lg:flex-col gap-3 md:gap-4 lg:gap-[33px] flex-1">
                             {/* Settings */}
-                            <NavLink to="/profile" end className="flex-1">
-                                {({ isActive }) => (
-                                    <div
-                                        className={`
-                                            h-[50px] md:h-[54px]
-                                            rounded-[16px]
-                                            px-5
-                                            flex
-                                            items-center
-                                            justify-between
-                                            transition-all
-                                            duration-200
-                                            ${isActive ? "text-white" : "text-[#777] hover:bg-[#F5F5F5]"}
-                                        `}
-                                        style={isActive ? activeStyle : {}}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <IoSettingsOutline className="text-[22px]" />
-                                            <span className="font-medium inline">Setting</span>
+                            <NavLink to="/profile" className="flex-1">
+                                {() => {
+                                    const isProfileActive =
+                                        location.pathname.startsWith("/profile");
+
+                                    return (
+                                        <div
+                                            className={`
+                    h-[50px] md:h-[54px]
+                    rounded-[16px]
+                    px-5
+                    flex
+                    items-center
+                    justify-between
+                    transition-all
+                    duration-200
+                    ${isProfileActive
+                                                    ? "text-white"
+                                                    : "text-[#777] hover:bg-[#F5F5F5]"
+                                                }
+                `}
+                                            style={isProfileActive ? activeStyle : {}}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <IoSettingsOutline className="text-[22px]" />
+                                                <span className="font-medium inline">
+                                                    Setting
+                                                </span>
+                                            </div>
+
+                                            <IoIosArrowForward
+                                                className={`
+                        text-[20px]
+                        transition-transform
+                        ${isProfileActive
+                                                        ? "opacity-100 translate-x-0"
+                                                        : "opacity-0 -translate-x-2"
+                                                    }
+                    `}
+                                            />
                                         </div>
-                                        <IoIosArrowForward className={`text-[20px] transition-transform ${isActive ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"}`} />
-                                    </div>
-                                )}
+                                    );
+                                }}
                             </NavLink>
 
                             {/* Help */}
