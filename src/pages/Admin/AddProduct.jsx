@@ -8,7 +8,7 @@ import { MdOutlinePriceChange, MdOutlineInventory } from "react-icons/md";
 import { HiOutlineDocumentText } from "react-icons/hi";
 import Swal from "sweetalert2";
 
-const BASE_URL = "http://petmarket.runasp.net/api/Products";
+const BASE_URL = "https://petmarket.runasp.net/api/Products";
 
 const AddProduct = () => {
     const { token } = useContext(AuthContext);
@@ -201,11 +201,11 @@ const AddProduct = () => {
                         await Promise.all([
 
                             axios.get(
-                                "http://petmarket.runasp.net/api/Category"
+                                "https://petmarket.runasp.net/api/Category"
                             ),
 
                             axios.get(
-                                "http://petmarket.runasp.net/api/PetTypes"
+                                "https://petmarket.runasp.net/api/PetTypes"
                             ),
 
                         ]);

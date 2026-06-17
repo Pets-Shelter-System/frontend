@@ -6,7 +6,7 @@ import { CheckoutContext } from "../../../components/context/CheckoutContext";
 import { AuthContext } from "../../../components/context/AuthContext";
 import { CartContext } from "../../../components/context/CartContext";
 
-const baseUrl = "http://petmarket.runasp.net/api";
+const baseUrl = "https://petmarket.runasp.net/api";
 
 const OrderShipping = ({ nextStep, prevStep }) => {
     const { setShipping } = useContext(CheckoutContext);

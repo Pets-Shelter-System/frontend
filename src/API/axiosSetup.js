@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "http://petmarket.runasp.net";
+const baseUrl = "https://petmarket.runasp.net";
 
 const api = axios.create({
   baseURL: baseUrl,

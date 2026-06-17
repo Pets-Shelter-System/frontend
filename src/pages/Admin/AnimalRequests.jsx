@@ -4,8 +4,8 @@ import axios from "axios";
 import { AuthContext } from "../../components/context/AuthContext";
 import { IoArrowBack } from "react-icons/io5";
 
-const BASE_URL = "http://petmarket.runasp.net/api/Admin/GetAllApplications";
-const IMG_BASE = "http://petmarket.runasp.net";
+const BASE_URL = "https://petmarket.runasp.net/api/Admin/GetAllApplications";
+const IMG_BASE = "https://petmarket.runasp.net";
 
 const AnimalRequests = () => {
   const { name } = useParams();
@@ -165,13 +165,12 @@ const AnimalRequests = () => {
                   <div className="flex items-center gap-2 text-xs font-bold">
 
                     <span
-                      className={`w-2 h-2 rounded-full ${
-                        item.statusName === "Pending"
+                      className={`w-2 h-2 rounded-full ${item.statusName === "Pending"
                           ? "bg-yellow-400"
                           : item.statusName === "Approved"
-                          ? "bg-green-500"
-                          : "bg-red-500"
-                      }`}
+                            ? "bg-green-500"
+                            : "bg-red-500"
+                        }`}
                     />
 
                     <span
@@ -179,8 +178,8 @@ const AnimalRequests = () => {
                         item.statusName === "Pending"
                           ? "text-yellow-600"
                           : item.statusName === "Approved"
-                          ? "text-green-600"
-                          : "text-red-600"
+                            ? "text-green-600"
+                            : "text-red-600"
                       }
                     >
                       {item.statusName.toUpperCase()}

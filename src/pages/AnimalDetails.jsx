@@ -12,7 +12,7 @@ import {
 } from "react-icons/fa";
 
 
-const BASE_URL = "http://petmarket.runasp.net";
+const BASE_URL = "https://petmarket.runasp.net";
 
 
 const getImage = (img) =>

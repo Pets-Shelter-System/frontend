@@ -4,7 +4,7 @@ import { AuthContext } from "./AuthContext";
 
 export const CheckoutContext = createContext();
 
-const baseUrl = "http://petmarket.runasp.net/api";
+const baseUrl = "https://petmarket.runasp.net/api";
 
 export default function CheckoutProvider({ children }) {
     const { token, user } = useContext(AuthContext);

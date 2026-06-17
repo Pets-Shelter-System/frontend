@@ -8,7 +8,7 @@ import Pagination from "../components/Pagination";
 import Spinner from "../components/Spinner";
 import { useNavigate } from "react-router-dom";
 
-const BASE_URL = "http://petmarket.runasp.net"
+const BASE_URL = "https://petmarket.runasp.net"
 
 
 

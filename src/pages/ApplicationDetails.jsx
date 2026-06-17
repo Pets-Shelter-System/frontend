@@ -217,7 +217,7 @@ const ApplicationDetails = () => {
                         <div className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100">
                             <div className="h-48 overflow-hidden">
                                 <img
-                                    src={application.animalPictureUrl ? `http://petmarket.runasp.net${application.animalPictureUrl}` : "https://via.placeholder.com/400x300"}
+                                    src={application.animalPictureUrl ? `https://petmarket.runasp.net${application.animalPictureUrl}` : "https://via.placeholder.com/400x300"}
                                     alt={application.animalName}
                                     className="w-full h-full object-cover"
                                     onError={(e) => { e.target.src = "https://via.placeholder.com/400x300"; }}

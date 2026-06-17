@@ -1,4 +1,4 @@
-import {  useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import api from "../API/api";
 import { IoCartOutline, IoHeartOutline, IoHeart } from "react-icons/io5";
 import { LuFilter, LuSlidersHorizontal } from "react-icons/lu";
@@ -15,8 +15,8 @@ import { FavoriteContext } from "../components/context/FavoriteContext";
 
 
 const Shop = () => {
-   let {addToCart} = useContext(CartContext)
-  let {counter,setcounter} = useContext(CounterContext)
+  let { addToCart } = useContext(CartContext)
+  let { counter, setcounter } = useContext(CounterContext)
   const [allProducts, setAllProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -30,10 +30,10 @@ const Shop = () => {
 
   const [tempTypes, setTempTypes] = useState([]);
   const [tempCategories, setTempCategories] = useState([]);
-const { toggleFavorite, isFavorite } = useContext(FavoriteContext);
+  const { toggleFavorite, isFavorite } = useContext(FavoriteContext);
   const pageSize = 12;
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleProductClick = (id) => {
     navigate(`/shop/product/${id}`);
@@ -45,53 +45,53 @@ const { toggleFavorite, isFavorite } = useContext(FavoriteContext);
     );
   };
 
-//   async function addProdToCart(prod) {
-//     let response = await addToCart(prod);
-//     console.log(response);
-    
-//     if (response.data.statusCode === 200) {
-//       toast.success( response.data.message);
-//     }else{
-//       toast.error("Failed to add to cart");
-//     }
-//   }
+  //   async function addProdToCart(prod) {
+  //     let response = await addToCart(prod);
+  //     console.log(response);
 
-//   const handleCartClick = (productId) => {
-//   const token = localStorage.getItem("token");
+  //     if (response.data.statusCode === 200) {
+  //       toast.success( response.data.message);
+  //     }else{
+  //       toast.error("Failed to add to cart");
+  //     }
+  //   }
 
-//   if (!token) {
-//     Swal.fire({
-//       icon: "warning",
-//       title: "Login required",
-//       text: "Please login or sign up to add items to cart",
-//     }).then(() => navigate("/login"));
+  //   const handleCartClick = (productId) => {
+  //   const token = localStorage.getItem("token");
 
-//     return;
-//   }
+  //   if (!token) {
+  //     Swal.fire({
+  //       icon: "warning",
+  //       title: "Login required",
+  //       text: "Please login or sign up to add items to cart",
+  //     }).then(() => navigate("/login"));
 
-//   // TODO: Add to cart API
-//   console.log("User is logged in → add to cart", productId);
-// };
+  //     return;
+  //   }
+
+  //   // TODO: Add to cart API
+  //   console.log("User is logged in → add to cart", productId);
+  // };
 
 
-const handleAddToCart = async (product) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    Swal.fire({
-      icon: "warning",
-      title: "Login required",
-      text: "Please login or sign up to add items to cart",
-    }).then(() => navigate("/login"));
-    return;
-  }
+  const handleAddToCart = async (product) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      Swal.fire({
+        icon: "warning",
+        title: "Login required",
+        text: "Please login or sign up to add items to cart",
+      }).then(() => navigate("/login"));
+      return;
+    }
 
-  try {
-    await addToCart(product); // فعليًا بتضيف المنتج للكارت
-    setcounter(counter + 1);                  // تحديث العداد
-  } catch (err) {
-    // Error is handled in addToCart
-  }
-};
+    try {
+      await addToCart(product); // فعليًا بتضيف المنتج للكارت
+      setcounter(counter + 1);                  // تحديث العداد
+    } catch (err) {
+      // Error is handled in addToCart
+    }
+  };
 
 
 
@@ -103,8 +103,7 @@ const handleAddToCart = async (product) => {
 
       while (current <= total) {
         const res = await api.get(
-          `/Products?pageNumber=${current}&pageSize=20${
-            sort ? `&sort=${sort}` : ""
+          `/Products?pageNumber=${current}&pageSize=20${sort ? `&sort=${sort}` : ""
           }`
         );
         items = [...items, ...res.data.data.items];
@@ -230,7 +229,7 @@ const handleAddToCart = async (product) => {
         // <p className="text-center text-xl text-[#011749] mt-10 font-bold">
         //   No products match your filters.
         // </p>
-        <Spinner/>
+        <Spinner />
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10">
@@ -243,22 +242,22 @@ const handleAddToCart = async (product) => {
               <button onClick={() => handleAddToCart(product)} className="w-8 h-8 bg-[#E7A01C] rounded-full flex justify-center items-center mr-2 mt-4">
                 <IoCartOutline className="text-white text-lg" />
               </button>
-              
+
               <button
-  onClick={() => toggleFavorite(product)}
-  className="w-8 h-8 bg-[#E7A01C] rounded-full flex justify-center items-center mt-4"
->
-  {isFavorite(product.id) ? (
-    <IoHeart className="text-red-600 text-lg" />
-  ) : (
-    <IoHeartOutline className="text-white text-lg" />
-  )}
-</button>
+                onClick={() => toggleFavorite(product)}
+                className="w-8 h-8 bg-[#E7A01C] rounded-full flex justify-center items-center mt-4"
+              >
+                {isFavorite(product.id) ? (
+                  <IoHeart className="text-red-600 text-lg" />
+                ) : (
+                  <IoHeartOutline className="text-white text-lg" />
+                )}
+              </button>
             </div>
 
             <img
               onClick={() => handleProductClick(product.id)}
-              src={`http://petmarket.runasp.net${product.photos[0]?.imageName}`}
+              src={`https://petmarket.runasp.net${product.photos[0]?.imageName}`}
               className="rounded-lg h-80 w-full object-cover mb-4 cursor-pointer"
               alt={product.name}
             />

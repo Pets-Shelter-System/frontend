@@ -2,7 +2,7 @@ import React from "react";
 
 const OrderItem = ({ item }) => {
     const imageUrl = item.pictureUrl
-        ? `http://petmarket.runasp.net${item.pictureUrl}`
+        ? `https://petmarket.runasp.net${item.pictureUrl}`
         : "https://via.placeholder.com/150";
 
     const subtotal = item.price * item.quantity;

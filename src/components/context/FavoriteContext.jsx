@@ -7,7 +7,7 @@ export const FavoriteContext = createContext();
 export default function FavoriteContextProvider({ children }) {
   const [favorites, setFavorites] = useState([]);
 
-  const baseUrl = "http://petmarket.runasp.net";
+  const baseUrl = "https://petmarket.runasp.net";
 
   const token = localStorage.getItem("token");
 

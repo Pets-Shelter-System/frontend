@@ -12,7 +12,7 @@ import {
 } from "react-icons/fa";
 
 
-const BASE_URL = "http://petmarket.runasp.net";
+const BASE_URL = "https://petmarket.runasp.net";
 
 
 const getImage = (img) =>
@@ -34,7 +34,7 @@ const FosterDetails = () => {
 
                 console.log("Foster Details", data);
 
-                
+
                 const petData = data.data || data;
                 setPet(petData);
             } catch (err) {

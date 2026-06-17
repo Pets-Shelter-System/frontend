@@ -3,8 +3,8 @@ import axios from "axios";
 import { AuthContext } from "../../components/context/AuthContext";
 import { IoIosSearch } from "react-icons/io";
 
-const BASE_URL = "http://petmarket.runasp.net/api/Admin/GetAllUsers";
-const IMG_BASE = "http://petmarket.runasp.net";
+const BASE_URL = "https://petmarket.runasp.net/api/Admin/GetAllUsers";
+const IMG_BASE = "https://petmarket.runasp.net";
 
 const Users = () => {
   const { token } = useContext(AuthContext);

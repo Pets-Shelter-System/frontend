@@ -21,40 +21,40 @@ export default function ProductDetails() {
   const [formContent, setFormContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
-  const baseUrl = "http://petmarket.runasp.net";
- 
-let {addToCart,getUserCartItems} = useContext(CartContext)
-const navigate = useNavigate();
+  const BASE_URL = "https://petmarket.runasp.net";
+
+  let { addToCart, getUserCartItems } = useContext(CartContext)
+  const navigate = useNavigate();
 
 
-async function addProdToCart(product) {
-  try {
-    await addToCart(product);
-  } catch (err) {
-    console.log("add to cart error", err);
-  }
-}
-
-
-
-
-
-const handleCartClick = (productId) => {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    Swal.fire({
-      icon: "warning",
-      title: "Login required",
-      text: "Please login or sign up to add items to cart",
-    }).then(() => navigate("/login"));
-
-    return;
+  async function addProdToCart(product) {
+    try {
+      await addToCart(product);
+    } catch (err) {
+      console.log("add to cart error", err);
+    }
   }
 
-  // TODO: Add to cart API
-  console.log("User is logged in → add to cart", productId);
-};
+
+
+
+
+  const handleCartClick = (productId) => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      Swal.fire({
+        icon: "warning",
+        title: "Login required",
+        text: "Please login or sign up to add items to cart",
+      }).then(() => navigate("/login"));
+
+      return;
+    }
+
+    // TODO: Add to cart API
+    console.log("User is logged in → add to cart", productId);
+  };
 
 
   const settings = {
@@ -185,12 +185,12 @@ const handleCartClick = (productId) => {
 
   const reviewsFromApi = ratings.length
     ? ratings.map((r) => ({
-        id: r.id,
-        name: r.userName ?? "Anonymous",
-        content: r.content ?? r.comment ?? "",
-        rating: Number(r.stars ?? 0),
-        time: r.reviewTime ?? null,
-      }))
+      id: r.id,
+      name: r.userName ?? "Anonymous",
+      content: r.content ?? r.comment ?? "",
+      rating: Number(r.stars ?? 0),
+      time: r.reviewTime ?? null,
+    }))
     : [];
 
   const formatDate = (iso) => {
@@ -252,8 +252,8 @@ const handleCartClick = (productId) => {
                     {ratings.length > 0
                       ? `${avgRating} (${ratings.length} reviews)`
                       : productDetails.rating
-                      ? `Rating: ${productDetails.rating}`
-                      : ""}
+                        ? `Rating: ${productDetails.rating}`
+                        : ""}
                   </div>
                 </div>
                 <h2 className="text-base sm:text-lg font-semibold text-gray-700 mb-4 text-center lg:text-left">
@@ -269,20 +269,20 @@ const handleCartClick = (productId) => {
                   EGP {productDetails.price}
                 </p>
                 <div className="flex justify-center sm:justify-end gap-3">
-                 <button
-  className="px-6 sm:px-8 py-3 bg-[#011749] text-white rounded-xl flex items-center gap-2 text-sm sm:text-base font-semibold hover:bg-opacity-90 transition shadow-md"
-  onClick={() => {
-    if (!localStorage.getItem("token")) {
-      navigate("/login");
-      return;
-    }
+                  <button
+                    className="px-6 sm:px-8 py-3 bg-[#011749] text-white rounded-xl flex items-center gap-2 text-sm sm:text-base font-semibold hover:bg-opacity-90 transition shadow-md"
+                    onClick={() => {
+                      if (!localStorage.getItem("token")) {
+                        navigate("/login");
+                        return;
+                      }
 
-    addProdToCart(productDetails);
-  }}
->
-  <IoCartOutline className="text-lg sm:text-2xl" />
-  Add to cart
-</button>
+                      addProdToCart(productDetails);
+                    }}
+                  >
+                    <IoCartOutline className="text-lg sm:text-2xl" />
+                    Add to cart
+                  </button>
 
                 </div>
               </div>

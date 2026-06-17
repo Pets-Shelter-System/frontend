@@ -7,7 +7,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
-const BASE_URL = "http://petmarket.runasp.net/api/Animals";
+const BASE_URL = "https://petmarket.runasp.net/api/Animals";
 
 const Animals = () => {
     const { token } = useContext(AuthContext);
@@ -139,7 +139,7 @@ const Animals = () => {
 
                             {/* Image */}
                             <img
-                                src={`http://petmarket.runasp.net${item.photos[0]?.imageUrl}`}
+                                src={`https://petmarket.runasp.net${item.photos[0]?.imageUrl}`}
                                 alt=""
                                 className="w-28 h-20 object-cover rounded-xl"
                             />

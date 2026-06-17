@@ -30,7 +30,7 @@ export default function Favorite() {
 
           {/* الصورة */}
           <img
-            src={`http://petmarket.runasp.net${product.photos?.[0]?.imageName}`}
+            src={`https://petmarket.runasp.net${product.photos?.[0]?.imageName}`}
             alt={product.name}
             className="rounded-lg h-40 w-full object-cover mb-4"
           />

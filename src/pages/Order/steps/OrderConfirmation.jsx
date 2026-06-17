@@ -6,7 +6,7 @@ import { CartContext } from "../../../components/context/CartContext";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-const baseUrl = "http://petmarket.runasp.net/api";
+const baseUrl = "https://petmarket.runasp.net/api";
 
 const OrderConfirmation = ({ prevStep }) => {
     const { cartItems } = useContext(CartContext);
@@ -97,7 +97,7 @@ const OrderConfirmation = ({ prevStep }) => {
                     <div key={item.productId} className="flex items-center justify-between py-2">
                         <div className="flex items-center gap-3">
                             <img
-                                src={item.pictureUrls?.[0] ? `http://petmarket.runasp.net${item.pictureUrls[0]}` : "/placeholder.png"}
+                                src={item.pictureUrls?.[0] ? `https://petmarket.runasp.net${item.pictureUrls[0]}` : "/placeholder.png"}
                                 className="w-14 h-14 rounded-md border"
                             />
                             <span className="font-semibold text-sm text-[#011749]">

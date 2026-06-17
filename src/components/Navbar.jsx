@@ -17,7 +17,7 @@ const Navbar = () => {
   // console.log(user)
 
   // const imageUrl = user?.pictureUrl
-  //   ? `http://petmarket.runasp.net${user.personalPicture}?v=${Date.now()}`
+  //   ? `https://petmarket.runasp.net${user.personalPicture}?v=${Date.now()}`
   //   : null;
 
   // const avatarFallback =
@@ -26,7 +26,7 @@ const Navbar = () => {
   //   "U";
 
   const imageUrl = user?.pictureUrl
-    ? `http://petmarket.runasp.net${user.pictureUrl}?v=${Date.now()}`
+    ? `https://petmarket.runasp.net${user.pictureUrl}?v=${Date.now()}`
     : null;
 
   const avatarFallback =

@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../components/context/AuthContext";
 
-const baseUrl = "http://petmarket.runasp.net/api";
+const baseUrl = "https://petmarket.runasp.net/api";
 
 export default function ThankYou() {
     const { token } = useContext(AuthContext);

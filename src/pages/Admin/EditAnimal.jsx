@@ -4,8 +4,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../components/context/AuthContext";
 
-const BASE_URL = "http://petmarket.runasp.net/api/Animals";
-const IMG_BASE = "http://petmarket.runasp.net";
+const BASE_URL = "https://petmarket.runasp.net/api/Animals";
+const IMG_BASE = "https://petmarket.runasp.net";
 
 // ── Helpers ──────────────────────────────────────────────
 
@@ -65,9 +65,9 @@ const LevelDots = ({ value, onChange }) => (
 
 const Badge = ({ children, color }) => {
   const colors = {
-    teal:   { bg: "#E1F5EE", text: "#0F6E56" },
-    coral:  { bg: "#FAECE7", text: "#993C1D" },
-    blue:   { bg: "#E6F1FB", text: "#011749" },
+    teal: { bg: "#E1F5EE", text: "#0F6E56" },
+    coral: { bg: "#FAECE7", text: "#993C1D" },
+    blue: { bg: "#E6F1FB", text: "#011749" },
     purple: { bg: "#EEEDFE", text: "#3C3489" },
   };
   const c = colors[color] || colors.blue;
@@ -148,51 +148,51 @@ const EditAnimal = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const form = new FormData();
-    form.append("Id", id);
-    form.append("Name", formData.name);
-    form.append("Description", formData.description);
-    form.append("AgeYears", Number(formData.ageYears));
-    form.append("Size", formData.size);
-    form.append("WeightKg", Number(formData.weightKg));
-    form.append("Gender", formData.gender);
-    form.append("PetTypeId", Number(formData.petTypeId));
-    form.append("AnimalsFriendlyLevel", formData.animalsFriendlyLevel);
-    form.append("ChildrenFriendlyLevel", formData.childrenFriendlyLevel);
-    form.append("HouseTrainedLevel", formData.houseTrainedLevel);
+    try {
+      const form = new FormData();
+      form.append("Id", id);
+      form.append("Name", formData.name);
+      form.append("Description", formData.description);
+      form.append("AgeYears", Number(formData.ageYears));
+      form.append("Size", formData.size);
+      form.append("WeightKg", Number(formData.weightKg));
+      form.append("Gender", formData.gender);
+      form.append("PetTypeId", Number(formData.petTypeId));
+      form.append("AnimalsFriendlyLevel", formData.animalsFriendlyLevel);
+      form.append("ChildrenFriendlyLevel", formData.childrenFriendlyLevel);
+      form.append("HouseTrainedLevel", formData.houseTrainedLevel);
 
-    // 👇 مهم
-    // لو عندك صور
-    // form.append("Photos", file)
+      // 👇 مهم
+      // لو عندك صور
+      // form.append("Photos", file)
 
-    await axios.put(`${BASE_URL}/${id}`, form, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
+      await axios.put(`${BASE_URL}/${id}`, form, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-    Swal.fire({
-      icon: "success",
-      title: "Updated!",
-      text: "Animal updated successfully",
-      confirmButtonColor: "#011749",
-    });
+      Swal.fire({
+        icon: "success",
+        title: "Updated!",
+        text: "Animal updated successfully",
+        confirmButtonColor: "#011749",
+      });
 
-    navigate("/admin/animals");
+      navigate("/admin/animals");
 
-  } catch (err) {
-    console.log(err.response?.data);
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: err.response?.data?.message || "Bad Request",
-    });
-  }
-};
+    } catch (err) {
+      console.log(err.response?.data);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response?.data?.message || "Bad Request",
+      });
+    }
+  };
 
   if (loading) {
     return (

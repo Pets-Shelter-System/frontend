@@ -45,7 +45,7 @@ export default function Cart() {
                     <tr className="text-center border-b border-gray-100 last:border-0" key={item.productId}>
                       <td className="px-2 py-4 text-left align-middle flex items-center">
                         <img
-                          src={item.pictureUrls?.[0] ? `http://petmarket.runasp.net${item.pictureUrls[0]}` : "/default.png"}
+                          src={item.pictureUrls?.[0] ? `https://petmarket.runasp.net${item.pictureUrls[0]}` : "/default.png"}
                           alt={item.productName}
                           className="w-[80px] h-[80px] mr-4 inline-block object-cover rounded-lg"
                         />

@@ -5,7 +5,7 @@ import { AuthContext } from "../../components/context/AuthContext";
 import { IoArrowBack } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 
-const BASE_URL = "http://petmarket.runasp.net/api/Animals";
+const BASE_URL = "https://petmarket.runasp.net/api/Animals";
 
 const AddAnimal = () => {
     const { token } = useContext(AuthContext);
@@ -100,7 +100,7 @@ const AddAnimal = () => {
             <div className="bg-white rounded-3xl shadow-sm p-6 font-inter tracking-wide text-[#011749]">
 
                 {/* Header */}
-                <Link to={'/admin/animals'}  className="flex items-center gap-3 mb-8">
+                <Link to={'/admin/animals'} className="flex items-center gap-3 mb-8">
                     <button className="p-2 rounded-full hover:bg-gray-100">
                         <IoArrowBack />
 

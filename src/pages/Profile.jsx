@@ -364,7 +364,7 @@ const Profile = () => {
     const imageUrl = (profileData?.personalPicture && typeof profileData.personalPicture === "string")
         ? (profileData.personalPicture.startsWith("http")
             ? profileData.personalPicture
-            : `http://petmarket.runasp.net${profileData.personalPicture}`) +
+            : `https://petmarket.runasp.net${profileData.personalPicture}`) +
         `${profileData.personalPicture.includes('?') ? '&' : '?'}v=${photoVersion}`
         : null;
 
@@ -604,7 +604,7 @@ const Profile = () => {
                                     <img
                                         src={(profileData.personalPicture.startsWith("http")
                                             ? profileData.personalPicture
-                                            : `http://petmarket.runasp.net${profileData.personalPicture}`) +
+                                            : `https://petmarket.runasp.net${profileData.personalPicture}`) +
                                             `${profileData.personalPicture.includes('?') ? '&' : '?'}v=${photoVersion}`}
                                         className="w-full h-full object-cover"
                                         alt="Current Profile"

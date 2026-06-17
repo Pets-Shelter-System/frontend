@@ -7,8 +7,8 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 
-const BASE_URL = "http://petmarket.runasp.net/api/Products";
-const IMG_BASE = "http://petmarket.runasp.net";
+const BASE_URL = "https://petmarket.runasp.net/api/Products";
+const IMG_BASE = "https://petmarket.runasp.net";
 
 const ManageShop = () => {
     const { token } = useContext(AuthContext);
@@ -453,11 +453,11 @@ const ManageShop = () => {
             )}
 
             {/* 🔥 Edit Product Modal */}
-{showEditModal && (
-    <div className="fixed inset-0 z-50 bg-black/35 backdrop-blur-[5px] flex items-center justify-center p-5">
+            {showEditModal && (
+                <div className="fixed inset-0 z-50 bg-black/35 backdrop-blur-[5px] flex items-center justify-center p-5">
 
-        <div
-            className="
+                    <div
+                        className="
             bg-white
             w-full
             max-w-[700px]
@@ -468,15 +468,15 @@ const ManageShop = () => {
             flex
             flex-col
         "
-        >
+                    >
 
-            {/* Header */}
+                        {/* Header */}
 
-            <div className="relative px-8 pt-7 pb-5 shrink-0">
+                        <div className="relative px-8 pt-7 pb-5 shrink-0">
 
-                <button
-                    onClick={() => setShowEditModal(false)}
-                    className="
+                            <button
+                                onClick={() => setShowEditModal(false)}
+                                className="
                     absolute
                     right-6
                     top-6
@@ -485,248 +485,248 @@ const ManageShop = () => {
                     hover:bg-gray-100
                     text-gray-400
                 "
-                >
-                    <IoIosClose size={28} />
-                </button>
+                            >
+                                <IoIosClose size={28} />
+                            </button>
 
-                <h3 className="text-[30px] font-bold text-[#011749]">
-                    Edit Product
-                </h3>
+                            <h3 className="text-[30px] font-bold text-[#011749]">
+                                Edit Product
+                            </h3>
 
-                <p className="text-[#9AA0AE] text-sm mt-2">
-                    Modify inventory details for item ID:
-                    <span className="ml-1 text-[#011749]">
-                        {editFormData.sku}
-                    </span>
-                </p>
+                            <p className="text-[#9AA0AE] text-sm mt-2">
+                                Modify inventory details for item ID:
+                                <span className="ml-1 text-[#011749]">
+                                    {editFormData.sku}
+                                </span>
+                            </p>
 
-            </div>
+                        </div>
 
-            {/* BODY */}
+                        {/* BODY */}
 
-            <form
-                onSubmit={handleEditSubmit}
-                className="flex flex-col flex-1 min-h-0"
-            >
+                        <form
+                            onSubmit={handleEditSubmit}
+                            className="flex flex-col flex-1 min-h-0"
+                        >
 
-                <div
-                    className="
+                            <div
+                                className="
                     px-8
                     pb-6
                     overflow-y-auto
                     flex-1
                 "
-                >
-
-                    {/* Image */}
-
-                    <div className="bg-[#F8F8FA] rounded-[28px] p-5 flex items-center gap-5 mb-6">
-
-                        <div className="w-[92px] h-[92px] rounded-[24px] overflow-hidden">
-
-                            <img
-                                src={
-                                    imagePreview ||
-                                    "/placeholder.png"
-                                }
-                                alt=""
-                                className="w-full h-full object-cover"
-                            />
-
-                        </div>
-
-                        <div>
-
-                            <p className="font-bold text-[#011749]">
-                                Product Image
-                            </p>
-
-                            <p className="text-sm text-gray-400">
-                                JPG or PNG, max 5MB
-                            </p>
-
-                            <label className="cursor-pointer text-[#011749] font-bold mt-2 inline-flex items-center gap-2">
-
-                                <LuImagePlus />
-
-                                Change image
-
-                                <input
-                                    type="file"
-                                    hidden
-                                    accept="image/*"
-                                    onChange={
-                                        handleImageChange
-                                    }
-                                />
-
-                            </label>
-
-                        </div>
-
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-x-5 gap-y-5">
-
-                        <div className="col-span-2">
-
-                            <label className="text-xs font-bold text-[#011749]">
-                                PRODUCT NAME
-                            </label>
-
-                            <input
-                                value={editFormData.name}
-                                onChange={(e) =>
-                                    setEditFormData({
-                                        ...editFormData,
-                                        name:
-                                            e.target
-                                                .value,
-                                    })
-                                }
-                                className="w-full mt-2 h-[58px] rounded-[18px] bg-[#F5F5F7] px-5"
-                            />
-
-                        </div>
-
-                        <div>
-
-                            <label className="text-xs font-bold text-[#011749]">
-                                CATEGORY
-                            </label>
-
-                            <select
-                                value={
-                                    editFormData.categoryName
-                                }
-                                onChange={(e) =>
-                                    setEditFormData({
-                                        ...editFormData,
-                                        categoryName:
-                                            e.target
-                                                .value,
-                                    })
-                                }
-                                className="w-full mt-2 h-[58px] rounded-[18px] bg-[#F5F5F7] px-5"
                             >
-                                <option>
-                                    Food
-                                </option>
 
-                            </select>
+                                {/* Image */}
 
-                        </div>
+                                <div className="bg-[#F8F8FA] rounded-[28px] p-5 flex items-center gap-5 mb-6">
 
-                        <div>
+                                    <div className="w-[92px] h-[92px] rounded-[24px] overflow-hidden">
 
-                            <label className="text-xs font-bold text-[#011749]">
-                                PRICE
-                            </label>
+                                        <img
+                                            src={
+                                                imagePreview ||
+                                                "/placeholder.png"
+                                            }
+                                            alt=""
+                                            className="w-full h-full object-cover"
+                                        />
 
-                            <input
-                                value={
-                                    editFormData.price
-                                }
-                                onChange={(e) =>
-                                    setEditFormData({
-                                        ...editFormData,
-                                        price:
-                                            e.target
-                                                .value,
-                                    })
-                                }
-                                className="w-full mt-2 h-[58px] rounded-[18px] bg-[#F5F5F7] px-5"
-                            />
+                                    </div>
 
-                        </div>
+                                    <div>
 
-                        <div>
+                                        <p className="font-bold text-[#011749]">
+                                            Product Image
+                                        </p>
 
-                            <label className="text-xs font-bold text-[#011749]">
-                                SKU
-                            </label>
+                                        <p className="text-sm text-gray-400">
+                                            JPG or PNG, max 5MB
+                                        </p>
 
-                            <input
-                                disabled
-                                value={
-                                    editFormData.sku
-                                }
-                                className="w-full mt-2 h-[58px] rounded-[18px] bg-[#F5F5F7] px-5"
-                            />
+                                        <label className="cursor-pointer text-[#011749] font-bold mt-2 inline-flex items-center gap-2">
 
-                        </div>
+                                            <LuImagePlus />
 
-                        <div>
+                                            Change image
 
-                            <label className="text-xs font-bold text-[#011749]">
-                                STOCK
-                            </label>
+                                            <input
+                                                type="file"
+                                                hidden
+                                                accept="image/*"
+                                                onChange={
+                                                    handleImageChange
+                                                }
+                                            />
 
-                            <input
-                                value={
-                                    editFormData.stock
-                                }
-                                onChange={(e) =>
-                                    setEditFormData({
-                                        ...editFormData,
-                                        stock:
-                                            e.target
-                                                .value,
-                                    })
-                                }
-                                className="w-full mt-2 h-[58px] rounded-[18px] bg-[#F5F5F7] px-5"
-                            />
+                                        </label>
 
-                        </div>
+                                    </div>
 
-                        <div className="col-span-2">
+                                </div>
 
-                            <label className="text-xs font-bold text-[#011749]">
-                                PET TYPE
-                            </label>
+                                <div className="grid grid-cols-2 gap-x-5 gap-y-5">
 
-                            <select
-                                value={
-                                    editFormData.petTypeName
-                                }
-                                onChange={(e) =>
-                                    setEditFormData({
-                                        ...editFormData,
-                                        petTypeName:
-                                            e.target
-                                                .value,
-                                    })
-                                }
-                                className="w-full mt-2 h-[58px] rounded-[18px] bg-[#F5F5F7] px-5"
-                            >
-                                <option>
-                                    Dogs
-                                </option>
+                                    <div className="col-span-2">
 
-                            </select>
+                                        <label className="text-xs font-bold text-[#011749]">
+                                            PRODUCT NAME
+                                        </label>
 
-                        </div>
+                                        <input
+                                            value={editFormData.name}
+                                            onChange={(e) =>
+                                                setEditFormData({
+                                                    ...editFormData,
+                                                    name:
+                                                        e.target
+                                                            .value,
+                                                })
+                                            }
+                                            className="w-full mt-2 h-[58px] rounded-[18px] bg-[#F5F5F7] px-5"
+                                        />
 
-                        <div className="col-span-2">
+                                    </div>
 
-                            <label className="text-xs font-bold text-[#011749]">
-                                DESCRIPTION
-                            </label>
+                                    <div>
 
-                            <textarea
-                                rows={3}
-                                value={
-                                    editFormData.description
-                                }
-                                onChange={(e) =>
-                                    setEditFormData({
-                                        ...editFormData,
-                                        description:
-                                            e.target
-                                                .value,
-                                    })
-                                }
-                                className="
+                                        <label className="text-xs font-bold text-[#011749]">
+                                            CATEGORY
+                                        </label>
+
+                                        <select
+                                            value={
+                                                editFormData.categoryName
+                                            }
+                                            onChange={(e) =>
+                                                setEditFormData({
+                                                    ...editFormData,
+                                                    categoryName:
+                                                        e.target
+                                                            .value,
+                                                })
+                                            }
+                                            className="w-full mt-2 h-[58px] rounded-[18px] bg-[#F5F5F7] px-5"
+                                        >
+                                            <option>
+                                                Food
+                                            </option>
+
+                                        </select>
+
+                                    </div>
+
+                                    <div>
+
+                                        <label className="text-xs font-bold text-[#011749]">
+                                            PRICE
+                                        </label>
+
+                                        <input
+                                            value={
+                                                editFormData.price
+                                            }
+                                            onChange={(e) =>
+                                                setEditFormData({
+                                                    ...editFormData,
+                                                    price:
+                                                        e.target
+                                                            .value,
+                                                })
+                                            }
+                                            className="w-full mt-2 h-[58px] rounded-[18px] bg-[#F5F5F7] px-5"
+                                        />
+
+                                    </div>
+
+                                    <div>
+
+                                        <label className="text-xs font-bold text-[#011749]">
+                                            SKU
+                                        </label>
+
+                                        <input
+                                            disabled
+                                            value={
+                                                editFormData.sku
+                                            }
+                                            className="w-full mt-2 h-[58px] rounded-[18px] bg-[#F5F5F7] px-5"
+                                        />
+
+                                    </div>
+
+                                    <div>
+
+                                        <label className="text-xs font-bold text-[#011749]">
+                                            STOCK
+                                        </label>
+
+                                        <input
+                                            value={
+                                                editFormData.stock
+                                            }
+                                            onChange={(e) =>
+                                                setEditFormData({
+                                                    ...editFormData,
+                                                    stock:
+                                                        e.target
+                                                            .value,
+                                                })
+                                            }
+                                            className="w-full mt-2 h-[58px] rounded-[18px] bg-[#F5F5F7] px-5"
+                                        />
+
+                                    </div>
+
+                                    <div className="col-span-2">
+
+                                        <label className="text-xs font-bold text-[#011749]">
+                                            PET TYPE
+                                        </label>
+
+                                        <select
+                                            value={
+                                                editFormData.petTypeName
+                                            }
+                                            onChange={(e) =>
+                                                setEditFormData({
+                                                    ...editFormData,
+                                                    petTypeName:
+                                                        e.target
+                                                            .value,
+                                                })
+                                            }
+                                            className="w-full mt-2 h-[58px] rounded-[18px] bg-[#F5F5F7] px-5"
+                                        >
+                                            <option>
+                                                Dogs
+                                            </option>
+
+                                        </select>
+
+                                    </div>
+
+                                    <div className="col-span-2">
+
+                                        <label className="text-xs font-bold text-[#011749]">
+                                            DESCRIPTION
+                                        </label>
+
+                                        <textarea
+                                            rows={3}
+                                            value={
+                                                editFormData.description
+                                            }
+                                            onChange={(e) =>
+                                                setEditFormData({
+                                                    ...editFormData,
+                                                    description:
+                                                        e.target
+                                                            .value,
+                                                })
+                                            }
+                                            className="
                                 w-full
                                 mt-2
                                 rounded-[18px]
@@ -734,31 +734,31 @@ const ManageShop = () => {
                                 p-5
                                 resize-none
                             "
-                            />
+                                        />
 
-                        </div>
+                                    </div>
 
-                    </div>
+                                </div>
 
-                </div>
+                            </div>
 
-                {/* Footer */}
+                            {/* Footer */}
 
-                <div className="px-8 py-5 border-t flex justify-end gap-5 shrink-0">
+                            <div className="px-8 py-5 border-t flex justify-end gap-5 shrink-0">
 
-                    <button
-                        type="button"
-                        onClick={() =>
-                            setShowEditModal(false)
-                        }
-                        className="text-gray-500 font-semibold"
-                    >
-                        Cancel
-                    </button>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setShowEditModal(false)
+                                    }
+                                    className="text-gray-500 font-semibold"
+                                >
+                                    Cancel
+                                </button>
 
-                    <button
-                        type="submit"
-                        className="
+                                <button
+                                    type="submit"
+                                    className="
                         h-[52px]
                         px-8
                         rounded-[18px]
@@ -766,18 +766,18 @@ const ManageShop = () => {
                         text-white
                         font-bold
                     "
-                    >
-                        Save Changes
-                    </button>
+                                >
+                                    Save Changes
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
 
                 </div>
-
-            </form>
-
-        </div>
-
-    </div>
-)}
+            )}
         </div>
     );
 };

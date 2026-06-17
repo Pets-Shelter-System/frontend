@@ -140,7 +140,7 @@ const UserApplications = () => {
                                     {/* Animal Image */}
                                     <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 shrink-0">
                                         <img
-                                            src={app.animalPictureUrl ? `http://petmarket.runasp.net${app.animalPictureUrl}` : "https://via.placeholder.com/150"}
+                                            src={app.animalPictureUrl ? `https://petmarket.runasp.net${app.animalPictureUrl}` : "https://via.placeholder.com/150"}
                                             alt={app.animalName}
                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                                             onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }}

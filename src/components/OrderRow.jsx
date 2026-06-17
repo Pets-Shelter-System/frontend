@@ -8,7 +8,7 @@ const OrderRow = ({ order }) => {
     // Mapping image: order.orderItems?.[0]?.pictureUrl
     const firstItem = order.orderItems?.[0];
     const imageUrl = firstItem?.pictureUrl
-        ? `http://petmarket.runasp.net${firstItem.pictureUrl}`
+        ? `https://petmarket.runasp.net${firstItem.pictureUrl}`
         : "https://via.placeholder.com/150";
 
     const formatDate = (dateString) => {

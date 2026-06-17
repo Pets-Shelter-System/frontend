@@ -7,7 +7,7 @@ import { IoEyeOutline } from "react-icons/io5";
 const Request = () => {
     const { token } = useContext(AuthContext);
     const navigate = useNavigate();
-    const IMG_BASE = "http://petmarket.runasp.net";
+    const IMG_BASE = "https://petmarket.runasp.net";
 
     const [requests, setRequests] = useState([]);
     const [stats, setStats] = useState({
@@ -42,7 +42,7 @@ const Request = () => {
     const getRequests = async () => {
         try {
             const res = await axios.get(
-                "http://petmarket.runasp.net/api/Admin/GetAllApplications",
+                "https://petmarket.runasp.net/api/Admin/GetAllApplications",
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -214,7 +214,7 @@ const Request = () => {
                                 <td className="py-3">
                                     <div className="flex flex-col items-center gap-1">
                                         <img
-                                            src={`http://petmarket.runasp.net${item.animalPictureUrl}`}
+                                            src={`https://petmarket.runasp.net${item.animalPictureUrl}`}
                                             alt=""
                                             className="w-10 h-10 rounded-md object-cover"
                                         />
