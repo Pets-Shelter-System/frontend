@@ -2,17 +2,29 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../API/api";
 import { toast } from "react-hot-toast";
-import { FaEye, FaEyeSlash, FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
+import {
+  FaEye,
+  FaEyeSlash,
+  FaCheckCircle,
+  FaExclamationCircle,
+} from "react-icons/fa";
 
 const INPUT_CLASS =
   "w-full border border-[#717070] rounded-[10px] px-4 py-2 my-2 text-sm text-[#333] focus:outline-none focus:ring-0 focus:border-[#717070] disabled:bg-gray-100 disabled:cursor-not-allowed";
 
 const ResetPassword = () => {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const email = searchParams.get("email");
-  const code = decodeURIComponent(searchParams.get("code") || "");
+  const rawQuery = window.location.search;
+
+  // email عادي
+  const email = new URLSearchParams(rawQuery).get("email") || "";
+
+  const code = rawQuery.split("code=")[1] || "";
+
+  console.log("EMAIL =", email);
+  console.log("TOKEN =", code);
+
 
   const [formData, setFormData] = useState({
     password: "",
@@ -46,29 +58,32 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (loading) return;
 
     if (!validate()) return;
 
     setLoading(true);
+
     try {
-      await api.post("/Account/reset-password", {
-        token: code,
+      const payload = {
         email,
+        token: code,
         password: formData.password,
-      });
+      };
+
+      console.log("PAYLOAD:", payload);
+
+      await api.post("/Account/reset-password", payload);
 
       setStatus("success");
     } catch (err) {
-      console.error("Reset Password Error:", err);
+      console.log(err.response?.data);
+
       if (err.response?.status === 400) {
-        toast.error("Reset link is invalid or expired.");
-      } else if (err.response?.status === 404) {
-        toast.error("User not found.");
-      } else if (!err.response) {
-        toast.error("Check your internet connection.");
+        toast.error(err.response?.data?.message || "Reset link expired");
       } else {
-        toast.error("Something went wrong.");
+        toast.error("Something went wrong");
       }
     } finally {
       setLoading(false);
@@ -132,7 +147,9 @@ const ResetPassword = () => {
 
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <div className="relative">
-          <label className="text-sm font-semibold text-gray-700">New Password</label>
+          <label className="text-sm font-semibold text-gray-700">
+            New Password
+          </label>
           <input
             type={showPassword ? "text" : "password"}
             name="password"
@@ -153,7 +170,9 @@ const ResetPassword = () => {
         </div>
 
         <div className="relative">
-          <label className="text-sm font-semibold text-gray-700">Confirm Password</label>
+          <label className="text-sm font-semibold text-gray-700">
+            Confirm Password
+          </label>
           <input
             type={showConfirmPassword ? "text" : "password"}
             name="confirmPassword"
@@ -174,12 +193,15 @@ const ResetPassword = () => {
         </div>
 
         {formData.password && formData.password.length < 12 && (
-          <p className="text-xs text-red-500">Password must be at least 12 characters.</p>
+          <p className="text-xs text-red-500">
+            Password must be at least 12 characters.
+          </p>
         )}
-        
-        {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-          <p className="text-xs text-red-500">Passwords do not match.</p>
-        )}
+
+        {formData.confirmPassword &&
+          formData.password !== formData.confirmPassword && (
+            <p className="text-xs text-red-500">Passwords do not match.</p>
+          )}
 
         <button
           type="submit"
