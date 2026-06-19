@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import api from "../API/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import { FavoriteContext } from "../components/context/FavoriteContext";
@@ -93,12 +93,12 @@ const Login = () => {
           </span>
         </div>
 
-        <a
-          href="#"
+        <Link
+          to="/forgot-password"
           className="text-right text-xs text-blue-500 hover:text-blue-700 font-medium"
         >
           Forgot Password?
-        </a>
+        </Link>
 
         <button
           type="submit"

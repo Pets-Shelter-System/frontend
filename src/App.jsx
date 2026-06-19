@@ -37,6 +37,8 @@ import UserApplications from "./pages/UserApplications";
 import ApplicationDetails from "./pages/ApplicationDetails";
 import UserOrders from "./pages/UserOrders";
 import OrderDetails from "./pages/OrderDetails";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 
 
@@ -95,6 +97,21 @@ function App() {
                     </AuthLayout>
                   }
                 />
+
+                <Route
+                  path="/forgot-password"
+                  element={
+                    <AuthLayout>
+                      <ForgotPassword />
+                    </AuthLayout>
+                  }
+                />
+
+                <Route path="/ResetPassword" element={
+                  <AuthLayout>
+                    <ResetPassword />
+                  </AuthLayout>
+                } />
 
                 <Route path="/admin" element={<AdminLayout />}>
                   <Route path="requests" element={<Request />} />
