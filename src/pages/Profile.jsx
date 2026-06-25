@@ -55,12 +55,7 @@ const Profile = () => {
         firstName: "",
         lastName: "",
         phoneNumber: "",
-        line1: "",
-        line2: "",
-        city: "",
-        state: "",
-        postalCode: "",
-        country: ""
+        address: ""
     });
 
     const [resetForm, setResetForm] = useState({
@@ -149,16 +144,16 @@ const Profile = () => {
 
     // --- Profile Edit Actions ---
     const handleOpenEditModal = () => {
+        const rawAddress = profileData?.address;
+        const formattedAddress = typeof rawAddress === 'object' && rawAddress !== null
+            ? [rawAddress.line1, rawAddress.line2, rawAddress.city, rawAddress.state, rawAddress.postalCode, rawAddress.country].filter(Boolean).join(", ")
+            : (rawAddress || "");
+
         setEditForm({
             firstName: profileData?.firstName || "",
             lastName: profileData?.lastName || "",
             phoneNumber: profileData?.phoneNumber || "",
-            line1: profileData?.address?.line1 || "",
-            line2: profileData?.address?.line2 || "",
-            city: profileData?.address?.city || "",
-            state: profileData?.address?.state || "",
-            postalCode: profileData?.address?.postalCode || "",
-            country: profileData?.address?.country || ""
+            address: formattedAddress
         });
         setIsEditModalOpen(true);
     };
@@ -171,14 +166,10 @@ const Profile = () => {
                 firstName: editForm.firstName || null,
                 lastName: editForm.lastName || null,
                 phoneNumber: editForm.phoneNumber || null,
-                address: {
-                    line1: editForm.line1 || null,
-                    line2: editForm.line2 || null,
-                    city: editForm.city || null,
-                    state: editForm.state || null,
-                    postalCode: editForm.postalCode || null,
-                    country: editForm.country || null
-                }
+                address:
+                typeof editForm.address === "string"
+                    ? editForm.address.trim() || null
+                    : null
             };
 
             await api.put("/Account/profile", updatePayload, {
@@ -191,7 +182,11 @@ const Profile = () => {
             setIsEditModalOpen(false);
             Swal.fire({ icon: "success", title: "Profile Updated", timer: 2000, showConfirmButton: false });
         } catch (err) {
-            Swal.fire({ icon: "error", title: "Update Failed", text: err.response?.data?.message || "Something went wrong" });
+            console.error("Profile Update Error Details:", err.response);
+            if (err.response?.data?.errors) {
+                console.error("Validation Errors:", err.response.data.errors);
+            }
+            Swal.fire({ icon: "error", title: "Update Failed", text: err.response?.data?.message || "One or more validation errors occurred" });
         } finally {
             setIsSaving(false);
         }
@@ -357,7 +352,10 @@ const Profile = () => {
     const fullName = `${profileData.firstName || ""} ${profileData.lastName || ""}`.trim() || "User Name";
     const email = profileData.email || "Not provided";
     const phone = profileData.phoneNumber || "Not provided";
-    const location = profileData.address?.city ? `${profileData.address.city}, ${profileData.address.country || ""}` : "Not provided";
+    const rawAddress = profileData.address;
+    const location = typeof rawAddress === 'object' && rawAddress !== null
+        ? [rawAddress.line1, rawAddress.city, rawAddress.country].filter(Boolean).join(", ")
+        : (rawAddress || "Not provided");
     const role = profileData.roles?.[0] || "Customer";
     const username = profileData.userName ? `@${profileData.userName}` : `@user`;
 
@@ -452,27 +450,22 @@ const Profile = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <ActionCard icon={<IoBasketOutline />} title="Orders" description="Track your recent pet shop orders" onClick={() => navigate("/profile/orders")} />
                             <ActionCard icon={<IoDocumentTextOutline />} title="Applications" description="Check status of adoption forms" onClick={() => navigate("/profile/applications")} />
-                            <ActionCard icon={<IoPawOutline />} title="My Animals" description="View animals you have adopted" onClick={() => navigate("/adoption")} />
+                            <ActionCard icon={<IoPawOutline />} title="My Animals" description="View animals you have adopted" onClick={() => navigate("/profile/my-animals")} />
                             <ActionCard icon={<IoKeyOutline />} title="Reset Password" description="Update security credentials" onClick={handleOpenResetModal} />
                         </div>
                     </div>
                 </div>
 
                 {/* Address Card */}
-                <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100 space-y-8">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-[#01174910] p-2 rounded-lg text-[#011749]"><IoLocationOutline size={20} /></div>
-                        <h2 className="text-xl font-bold text-[#011749]">Address Details</h2>
+                    <div className="bg-[#f8f9fb] p-6 rounded-2xl">
+                        <DetailItem
+                            label="Full Address"
+                            value={typeof profileData?.address === 'object' && profileData?.address !== null
+                                ? Object.values(profileData.address).filter(Boolean).join(", ")
+                                : (profileData?.address || "Not provided")}
+                            full
+                        />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <DetailItem label="Address Line 1" value={profileData?.address?.line1 || "Not provided"} full />
-                        <DetailItem label="Address Line 2" value={profileData?.address?.line2 || "Not provided"} full />
-                        <DetailItem label="City" value={profileData?.address?.city || "Not provided"} />
-                        <DetailItem label="State" value={profileData?.address?.state || "Not provided"} />
-                        <DetailItem label="Postal Code" value={profileData?.address?.postalCode || "Not provided"} />
-                        <DetailItem label="Country" value={profileData?.address?.country || "Not provided"} />
-                    </div>
-                </div>
             </div>
 
             {/* EDIT PROFILE MODAL */}
@@ -489,16 +482,8 @@ const Profile = () => {
                                 <FormInput label="First Name" value={editForm.firstName} onChange={(v) => setEditForm({ ...editForm, firstName: v })} />
                                 <FormInput label="Last Name" value={editForm.lastName} onChange={(v) => setEditForm({ ...editForm, lastName: v })} />
                             </div>
-                            <FormInput label="Phone" icon={<IoCallOutline />} value={editForm.phoneNumber} onChange={(v) => setEditForm({ ...editForm, phoneNumber: v })} />
-                            <div className="space-y-6 pt-4 border-t border-gray-50">
-                                <FormInput label="Address Line 1" value={editForm.line1} onChange={(v) => setEditForm({ ...editForm, line1: v })} />
-                                <FormInput label="Address Line 2" value={editForm.line2} onChange={(v) => setEditForm({ ...editForm, line2: v })} />
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <FormInput label="City" value={editForm.city} onChange={(v) => setEditForm({ ...editForm, city: v })} />
-                                    <FormInput label="Postal Code" value={editForm.postalCode} onChange={(v) => setEditForm({ ...editForm, postalCode: v })} />
-                                    <FormInput label="Country" value={editForm.country} onChange={(v) => setEditForm({ ...editForm, country: v })} />
-                                </div>
-                            </div>
+                            <FormInput label="Phone Number" icon={<IoCallOutline />} value={editForm.phoneNumber} onChange={(v) => setEditForm({ ...editForm, phoneNumber: v })} />
+                            <FormInput label="Address" icon={<IoLocationOutline />} value={editForm.address} onChange={(v) => setEditForm({ ...editForm, address: v })} />
                             <div className="pt-6 flex justify-end gap-4 border-t border-gray-50">
                                 <button type="button" onClick={() => setIsEditModalOpen(false)} className="px-8 py-3 text-gray-500 font-semibold">Cancel</button>
                                 <button type="submit" disabled={isSaving} className="bg-[#011749] text-white px-10 py-3 rounded-xl font-bold disabled:opacity-50">

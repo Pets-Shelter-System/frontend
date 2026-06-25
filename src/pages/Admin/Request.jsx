@@ -95,13 +95,13 @@ const Request = () => {
             </p>
 
             {/* Stats */}
-            <div className="mt-6 flex flex-col lg:flex-row gap-6 items-start">
+            <div className="mt-6 flex flex-col xl:flex-row gap-6 items-stretch xl:items-start">
 
                 {/* LEFT SIDE */}
                 <div className="flex gap-6 flex-wrap">
 
                     {/* Pending */}
-                    <div className="bg-white rounded-[20px] px-6 py-5 shadow-sm w-[220px]">
+                    <div className="bg-white rounded-[20px] px-6 py-5 shadow-sm min-w-[200px] flex-1">
                         <p className="font-inter font-bold text-[#6F84AE]  tracking-wide">PENDING REVIEW</p>
                         <h2 className="text-2xl font-bold text-[#011749] mt-2">
                             {stats.pending}
@@ -112,7 +112,7 @@ const Request = () => {
                     <div className="hidden lg:block w-[2px] h-[80px] bg-gray-200 self-center"></div>
 
                     {/* Active */}
-                    <div className="bg-white rounded-[20px] px-6 py-5 shadow-sm w-[220px]">
+                    <div className="bg-white rounded-[20px] px-6 py-5 shadow-sm min-w-[200px] flex-1">
                         <p className="font-inter font-bold text-[#6F84AE]  tracking-wide">ACTIVE REQUESTS</p>
 
                         <h2 className="text-2xl font-bold text-[#011749] mt-2">
@@ -125,7 +125,7 @@ const Request = () => {
                 </div>
 
                 {/* RIGHT SIDE (Success Rate) */}
-                <div className="bg-[#011749] text-white rounded-[20px] px-6 py-5 w-[260px]">
+                <div className="bg-[#011749] text-white rounded-[20px] px-6 py-5 w-full xl:w-[260px]">
 
                     <p className="font-inter font-bold text-[#B0CDFF]  tracking-wide">SUCCESS RATE</p>
 
@@ -146,20 +146,20 @@ const Request = () => {
             </div>
 
             {/* Table */}
-            <div className="mt-8 bg-white p-5 rounded-2xl shadow">
+            <div className="mt-8 bg-white p-4 sm:p-6 rounded-2xl shadow overflow-hidden">
 
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
                     {/* Tabs */}
-                    <div className="flex gap-4 items-center">
-                        <button className="bg-[#011749] text-white px-5 py-1.5 rounded-full text-sm font-medium">
+                    <div className="flex gap-2 sm:gap-4 items-center overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 custom-scrollbar">
+                        <button className="bg-[#011749] text-white px-4 sm:px-5 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap">
                             Adoption
                         </button>
-                        <button className="text-gray-400 text-sm font-medium">Foster</button>
-                        <button className="text-gray-400 text-sm font-medium">Sponsor</button>
+                        <button className="text-gray-400 text-xs sm:text-sm font-medium whitespace-nowrap">Foster</button>
+                        <button className="text-gray-400 text-xs sm:text-sm font-medium whitespace-nowrap">Sponsor</button>
                     </div>
 
                     {/* Search */}
-                    <div className="ml-auto">
+                    <div className="w-full sm:w-auto">
                         <input
                             type="text"
                             placeholder="Search petitioner..."
@@ -168,14 +168,15 @@ const Request = () => {
                                 setSearch(e.target.value);
                                 setCurrentPage(1);
                             }}
-                            className="bg-[#F6F7F9] px-4 py-2 rounded-full outline-none text-sm w-[220px]"
+                            className="bg-[#F6F7F9] px-4 py-2 rounded-full outline-none text-sm w-full sm:w-[220px]"
                         />
                     </div>
 
                 </div>
 
-                {/* Table */}
-                <table className="w-full text-sm text-left mt-5">
+                {/* Table with wrapper */}
+                <div className="overflow-x-auto custom-scrollbar">
+                    <table className="w-full text-sm text-left min-w-[700px]">
 
                     <thead className="border-b">
                         <tr className="text-[#6F84AE] font-inter text-xs tracking-wide text-center">
@@ -269,24 +270,25 @@ const Request = () => {
                         ))}
                     </tbody>
 
-                </table>
+                    </table>
+                </div>
 
                 {/* Footer */}
-                <div className="flex justify-between items-center mt-4 text-sm text-gray-400">
-                    <p>
+                <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4 text-sm text-gray-400">
+                    <p className="order-2 sm:order-1">
                         Showing {currentRequests.length} of {filteredRequests.length} requests
                     </p>
 
-                    <div className="flex gap-2">
-
+                    <div className="flex gap-2 order-1 sm:order-2 w-full sm:w-auto justify-between sm:justify-end">
                         <button
                             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                            className="px-3 py-1 rounded border text-gray-500"
+                            className="px-3 py-1 rounded border text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                            disabled={currentPage === 1}
                         >
                             Previous
                         </button>
 
-                        <span className="px-2 text-gray-600">
+                        <span className="px-2 text-gray-600 flex items-center">
                             {currentPage} / {totalPages}
                         </span>
 
@@ -294,11 +296,11 @@ const Request = () => {
                             onClick={() =>
                                 setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                             }
-                            className="bg-[#011749] text-white px-4 py-1 rounded"
+                            disabled={currentPage === totalPages}
+                            className="bg-[#011749] text-white px-4 py-1 rounded hover:bg-[#022572] disabled:opacity-50"
                         >
                             Next
                         </button>
-
                     </div>
                 </div>
 

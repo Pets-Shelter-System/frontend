@@ -84,7 +84,7 @@ const Navbar = () => {
     const role = String(rawRole).toLowerCase();
 
     if (role === "admin") {
-      navigate("/admin/users");
+      navigate("/admin/settings");
     } else {
       navigate("/profile");
     }

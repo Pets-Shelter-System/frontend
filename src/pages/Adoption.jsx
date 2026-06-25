@@ -355,40 +355,40 @@ const Adoption = () => {
                     {loading ? (
                         <Spinner />
                     ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                            {pets.map((pet) => (
-                                <div
-                                    key={pet.id}
-                                    className="bg-white rounded-2xl shadow-md p-5 relative trasition hover:shadow-lg"
-                                >
-                                    {/* Favorite
-                                    <span className="absolute top-3 right-3 bg-[#F8B63D] w-7 h-7 rounded-full flex items-center justify-center text-white text-xs">
-                                        <FaHeart />
-                                    </span> */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                                {pets.map((pet) => (
+                                    <div
+                                        key={pet.id}
+                                        className="bg-white rounded-2xl shadow-md p-5 relative transition hover:shadow-lg flex flex-col group h-full"
+                                    >
 
-                                    {/* Image */}
-                                    <img
-                                        src={getPetImage(pet)}
-                                        alt={pet.name}
-                                        className="w-full h-44 object-cover rounded-xl mb-4 "
-                                    />
 
-                                    {/* Info */}
-                                    <h3 className="text-center font-bold text-[#F8B63D]">
-                                        {pet.name}
-                                    </h3>
-                                    <p className="text-center text-sm text-gray-500">
-                                        {pet.city || "Cairo, Egypt"}
-                                    </p>
+                                        <div className="w-full h-44 overflow-hidden rounded-xl mb-4">
+                                            <img
+                                                src={getPetImage(pet)}
+                                                alt={pet.name}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                            />
+                                        </div>
 
-                                    <div className="flex justify-center mt-3">
-                                        <button onClick={() => navigate(`/adoption/${pet.id}`)} className="border border-[#011749] text-[#011749] px-4 py-1 rounded-full text-xs hover:bg-[#011749] hover:text-white transition">
-                                            View Animal
-                                        </button>
+                                        <h3 className="text-center font-bold text-[#F8B63D] text-lg">
+                                            {pet.name}
+                                        </h3>
+                                        <p className="text-center text-sm text-gray-400 mb-6 flex items-center justify-center gap-1">
+                                            <span className="text-xs"></span> {pet.city || "Cairo, Egypt"}
+                                        </p>
+
+                                        <div className="mt-auto flex justify-center">
+                                            <button
+                                                onClick={() => navigate(`/foster/${pet.id}`)}
+                                                className="border-2 border-[#011749] text-[#011749] px-6 py-1.5 rounded-full text-sm font-bold hover:bg-[#011749] hover:text-white transition transform active:scale-95"
+                                            >
+                                                View Animal
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
                     )}
 
                     {/* Pagination */}

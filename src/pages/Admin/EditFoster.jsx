@@ -5,7 +5,7 @@ import { AuthContext } from "../../components/context/AuthContext";
 import AnimalForm from "../../components/admin/AnimalForm";
 import Spinner from "../../components/Spinner";
 
-const EditAnimal = () => {
+const EditFoster = () => {
     const { id } = useParams();
     const { token } = useContext(AuthContext);
     const [animal, setAnimal] = useState(null);
@@ -14,12 +14,23 @@ const EditAnimal = () => {
     useEffect(() => {
         const fetchAnimal = async () => {
             try {
-                const res = await axios.get(`https://petmarket.runasp.net/api/Animals/${id}`, {
+                const res = await axios.get(`https://petmarket.runasp.net/api/FosterAnimals/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                setAnimal(res.data.data);
+                
+                // Flexible data parsing to handle different API structures
+                const fetchedData = res.data?.data || res.data;
+                
+                if (fetchedData) {
+                    setAnimal(fetchedData);
+                } else {
+                    console.error("Animal data not found in response:", res.data);
+                }
             } catch (err) {
                 console.error("Fetch Error:", err);
+                if (err.response?.status === 404) {
+                    console.warn(`Animal with ID ${id} not found on server.`);
+                }
             } finally {
                 setLoading(false);
             }
@@ -33,9 +44,9 @@ const EditAnimal = () => {
 
     return (
         <div className="p-6">
-            <AnimalForm type="adoption" mode="edit" initialData={animal} />
+            <AnimalForm type="foster" mode="edit" initialData={animal} />
         </div>
     );
 };
 
-export default EditAnimal;
+export default EditFoster;

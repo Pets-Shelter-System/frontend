@@ -39,11 +39,11 @@ const AnimalRequests = () => {
       </button>
 
       {/* 🔥 HEADER */}
-      <div className="flex justify-between items-end mb-10">
+      <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-end gap-6 mb-10">
 
         {/* Title */}
         <div>
-          <h1 className="text-5xl font-extrabold uppercase tracking-tight">
+          <h1 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight break-words">
             {name}
           </h1>
           <p className="text-gray-400 mt-2">
@@ -52,7 +52,7 @@ const AnimalRequests = () => {
         </div>
 
         {/* Animal Card */}
-        <div className="flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm w-[400px]">
+        <div className="flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm w-full lg:w-[400px]">
 
           <img
             src={
@@ -86,21 +86,22 @@ const AnimalRequests = () => {
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
 
         {/* Header */}
-        <div className="flex justify-between items-center px-8 py-5 bg-gray-50">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-6 sm:px-8 py-5 bg-gray-50 gap-4">
           <h2 className="font-bold text-lg">
             Pending & Active Requests
           </h2>
 
           <div className="flex items-center gap-2 text-xs">
             <span className="text-gray-400 uppercase">Sort by:</span>
-            <select className="bg-white px-3 py-1 rounded-lg">
+            <select className="bg-white px-3 py-1 rounded-lg outline-none border border-gray-100">
               <option>Most Recent</option>
             </select>
           </div>
         </div>
 
-        {/* Table */}
-        <table className="w-full text-sm">
+        {/* Table Wrapper */}
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full text-sm min-w-[800px]">
 
           <thead className="text-xs text-gray-400 uppercase">
             <tr>
@@ -199,8 +200,8 @@ const AnimalRequests = () => {
             ))}
           </tbody>
 
-        </table>
-
+          </table>
+        </div>
       </div>
 
       {/* 🔥 BOTTOM CARDS */}

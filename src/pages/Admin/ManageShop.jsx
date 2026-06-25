@@ -248,7 +248,7 @@ const ManageShop = () => {
             </div>
 
             {/* 🔥 Stats Card */}
-            <div className="mb-8 max-w-[280px]">
+            <div className="mb-8 w-full max-w-[280px]">
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">
                         Total Items
@@ -260,7 +260,7 @@ const ManageShop = () => {
             </div>
 
             {/* 🔥 Search Bar */}
-            <div className="mb-6 relative max-w-[400px]">
+            <div className="mb-6 relative w-full sm:max-w-[400px]">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#C4C6CF]">
                     <IoIosSearch size={20} />
                 </div>
@@ -274,8 +274,9 @@ const ManageShop = () => {
             </div>
 
             {/* 🔥 Table */}
-            <div className="bg-white rounded-[24px] overflow-hidden shadow-sm border border-gray-100">
-                <table className="w-full text-sm">
+            <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden">
+                <div className="overflow-x-auto custom-scrollbar">
+                    <table className="w-full text-sm min-w-[800px]">
                     <thead className="bg-[#F9FAFB] border-b border-gray-100">
                         <tr className="text-[#44474E] text-[11px] font-bold uppercase tracking-widest">
                             <th className="px-6 py-5 text-left">Product</th>
@@ -372,7 +373,8 @@ const ManageShop = () => {
                             </tr>
                         ))}
                     </tbody>
-                </table>
+                    </table>
+                </div>
             </div>
 
             {/* 🔥 Pagination */}

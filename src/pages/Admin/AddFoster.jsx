@@ -1,12 +1,12 @@
 import React from "react";
 import AnimalForm from "../../components/admin/AnimalForm";
 
-const AddAnimal = () => {
+const AddFoster = () => {
     return (
         <div className="p-6">
-            <AnimalForm type="adoption" mode="create" />
+            <AnimalForm type="foster" mode="create" />
         </div>
     );
 };
 
-export default AddAnimal;
+export default AddFoster;

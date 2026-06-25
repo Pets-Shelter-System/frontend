@@ -1,4 +1,6 @@
 import { Routes, Route } from "react-router-dom";
+import AdminOrders from "./pages/Admin/AdminOrders";
+import AdminOrderDetails from "./pages/Admin/AdminOrderDetails";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -34,11 +36,15 @@ import FosterDetails from "./pages/FosterDetails";
 import FosterMe from "./pages/FosterMe";
 import Profile from "./pages/Profile";
 import UserApplications from "./pages/UserApplications";
+import MyAnimals from "./pages/profile/MyAnimals";
+import MyAnimalDetails from "./pages/profile/MyAnimalDetails";
 import ApplicationDetails from "./pages/ApplicationDetails";
 import UserOrders from "./pages/UserOrders";
 import OrderDetails from "./pages/OrderDetails";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import AddFoster from "./pages/Admin/AddFoster";
+import EditFoster from "./pages/Admin/EditFoster";
 
 
 
@@ -76,6 +82,8 @@ function App() {
                     <Route path="applications/:id" element={<ApplicationDetails />} />
                     <Route path="orders" element={<UserOrders />} />
                     <Route path="orders/:id" element={<OrderDetails />} />
+                    <Route path="my-animals" element={<MyAnimals />} />
+                    <Route path="my-animals/:id" element={<MyAnimalDetails />} />
                   </Route>
 
                 </Route>
@@ -120,8 +128,13 @@ function App() {
                   <Route path="animals" element={<Animals />} />
                   <Route path="animals/edit/:id" element={<EditAnimal />} />
                   <Route path="animals/add" element={<AddAnimal />} />
+                  <Route path="animals/foster/add" element={<AddFoster />} />
+                  <Route path="animals/foster/edit/:id" element={<EditFoster />} />
+                  <Route path="orders" element={<AdminOrders />} />
+                  <Route path="orders/:id" element={<AdminOrderDetails />} />
                   <Route path="shop" element={<ManageShop />} />
                   <Route path="shop/add" element={<AddProduct />} />
+                  <Route path="settings" element={<Profile />} />
 
                   {/* <Route path="shop/product/:id" element={<AdminProductDetails />} /> */}
 
