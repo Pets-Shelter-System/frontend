@@ -26,6 +26,9 @@ const ManageShop = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [activeProduct, setActiveProduct] = useState(null);
     const [showDropdown, setShowDropdown] = useState(null); // ID of product with open dropdown
+    const [showViewModal, setShowViewModal] = useState(false);
+    const [viewProductDetails, setViewProductDetails] = useState(null);
+    const [loadingDetails, setLoadingDetails] = useState(false);
 
     // Forms State
     const [editFormData, setEditFormData] = useState({
@@ -112,6 +115,23 @@ const ManageShop = () => {
         setActiveProduct(product);
         setShowDeleteModal(true);
         setShowDropdown(null);
+    };
+
+    const openViewModal = async (product) => {
+        setLoadingDetails(true);
+        setShowViewModal(true);
+        setShowDropdown(null);
+        setViewProductDetails(null);
+        try {
+            const res = await axios.get(`${BASE_URL}/${product.id}`);
+            setViewProductDetails(res.data.data || res.data);
+        } catch (err) {
+            console.error("Error fetching product details:", err);
+            Swal.fire("Error", "Could not load product details.", "error");
+            setShowViewModal(false);
+        } finally {
+            setLoadingDetails(false);
+        }
     };
 
     const handleDelete = async () => {
@@ -354,7 +374,7 @@ const ManageShop = () => {
                                                     Edit
                                                 </button>
                                                 <button
-                                                    onClick={() => navigate(`/admin/shop/product/${p.id}`)}
+                                                    onClick={() => openViewModal(p)}
                                                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                                                 >
                                                     View
@@ -778,6 +798,116 @@ const ManageShop = () => {
 
                     </div>
 
+                </div>
+            )}
+
+            {/* 🔥 View Product Modal */}
+            {showViewModal && (
+                <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-white w-full max-w-lg rounded-[32px] overflow-hidden shadow-2xl relative flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200">
+                        {/* Header */}
+                        <div className="px-8 pt-7 pb-4 bg-gray-50/50 flex justify-between items-center border-b border-gray-100">
+                            <div>
+                                <h3 className="text-xl font-bold text-[#011749]">Product Details</h3>
+                                <p className="text-xs text-gray-400 mt-1">
+                                    SKU: {viewProductDetails ? String(viewProductDetails.id).toUpperCase() : "..."}
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setShowViewModal(false)}
+                                className="p-1 rounded-full hover:bg-gray-100 text-gray-455 transition-colors"
+                            >
+                                <IoIosClose size={28} />
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
+                            {loadingDetails ? (
+                                <div className="flex flex-col items-center justify-center py-12 space-y-3">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#011749]"></div>
+                                    <span className="text-sm font-medium text-gray-500">Loading product details...</span>
+                                </div>
+                            ) : viewProductDetails ? (
+                                <>
+                                    {/* Image Section */}
+                                    <div className="bg-[#F8F9FB] border border-gray-100 rounded-2xl p-4 flex justify-center items-center h-48 overflow-hidden animate-fadeIn">
+                                        <img
+                                            src={
+                                                viewProductDetails.photos?.[0]
+                                                    ? IMG_BASE + viewProductDetails.photos[0].imageName
+                                                    : "/placeholder.png"
+                                            }
+                                            alt={viewProductDetails.name}
+                                            className="max-h-full object-contain rounded-lg"
+                                            onError={(e) => (e.currentTarget.src = "/placeholder.png")}
+                                        />
+                                    </div>
+
+                                    {/* Primary Info */}
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600">
+                                                {viewProductDetails.categoryName}
+                                            </span>
+                                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-orange-50 text-orange-600">
+                                                {viewProductDetails.petTypeName}
+                                            </span>
+                                        </div>
+                                        <h2 className="text-2xl font-bold text-[#011749] leading-tight">
+                                            {viewProductDetails.name}
+                                        </h2>
+                                        
+                                        <div className="flex items-center gap-1.5 pt-1">
+                                            <span className="text-yellow-400">★</span>
+                                            <span className="text-xs font-bold text-[#011749]">
+                                                {viewProductDetails.rating != null ? viewProductDetails.rating.toFixed(1) : "0.0"}
+                                            </span>
+                                            <span className="text-xs text-gray-400">Rating</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Financials & Stock */}
+                                    <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                                        <div>
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Price</span>
+                                            <p className="text-xl font-bold text-[#011749] mt-0.5">
+                                                EGP {(viewProductDetails.price || 0).toFixed(2)}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Available Stock</span>
+                                            <p className="text-xl font-bold text-[#011749] mt-0.5">
+                                                {viewProductDetails.stock != null ? viewProductDetails.stock : 48} Units
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Description */}
+                                    <div className="space-y-2">
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Description</span>
+                                        <p className="text-sm text-gray-600 bg-white border border-gray-100 p-4 rounded-xl leading-relaxed whitespace-pre-line">
+                                            {viewProductDetails.description || "No description provided for this product."}
+                                        </p>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="text-center text-gray-500 py-12">
+                                    No product details found.
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer Actions */}
+                        <div className="px-8 py-5 bg-gray-50 border-t border-gray-100 flex justify-end">
+                            <button
+                                onClick={() => setShowViewModal(false)}
+                                className="px-6 py-2.5 bg-[#011749] text-white hover:bg-[#022572] rounded-xl text-sm font-bold shadow-sm transition-all"
+                            >
+                                Close View
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

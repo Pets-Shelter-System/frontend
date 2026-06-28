@@ -5,11 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { IoEyeOutline } from "react-icons/io5";
 
 const Request = () => {
-    const { token } = useContext(AuthContext);
     const navigate = useNavigate();
+    const { token } = useContext(AuthContext);
     const IMG_BASE = "https://petmarket.runasp.net";
 
     const [requests, setRequests] = useState([]);
+    const [activeTab, setActiveTab] = useState("Adoption");
     const [stats, setStats] = useState({
         pending: 0,
         approved: 0,
@@ -39,10 +40,14 @@ const Request = () => {
         startIndex + itemsPerPage
     );
 
-    const getRequests = async () => {
+    const getRequests = async (tab = activeTab) => {
         try {
+            const baseUrl = tab === "Foster"
+                ? "https://petmarket.runasp.net/api/Admin/GetAllFosterApplications"
+                : "https://petmarket.runasp.net/api/Admin/GetAllApplications";
+
             const res = await axios.get(
-                "https://petmarket.runasp.net/api/Admin/GetAllApplications",
+                baseUrl,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -52,13 +57,13 @@ const Request = () => {
 
             const data = res.data.data;
 
-            setRequests(data.pagedResult.items);
+            setRequests(data.pagedResult?.items || []);
 
             setStats({
-                pending: data.pendingRequestsCount,
-                approved: data.approvedRequestsCount,
-                rejected: data.rejectedRequestsCount,
-                successRate: data.successRate,
+                pending: data.pendingRequestsCount || 0,
+                approved: data.approvedRequestsCount || 0,
+                rejected: data.rejectedRequestsCount || 0,
+                successRate: data.successRate || 0,
             });
         } catch (err) {
             console.log(err);
@@ -66,8 +71,10 @@ const Request = () => {
     };
 
     useEffect(() => {
-        getRequests();
-    }, []);
+        if (token) {
+            getRequests(activeTab);
+        }
+    }, [activeTab, token]);
 
     // 🎨 Status color
     const getStatusStyle = (status) => {
@@ -151,11 +158,27 @@ const Request = () => {
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
                     {/* Tabs */}
                     <div className="flex gap-2 sm:gap-4 items-center overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 custom-scrollbar">
-                        <button className="bg-[#011749] text-white px-4 sm:px-5 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap">
+                        <button
+                            onClick={() => { setActiveTab("Adoption"); setCurrentPage(1); }}
+                            className={`px-4 sm:px-5 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+                                activeTab === "Adoption"
+                                    ? "bg-[#011749] text-white font-semibold"
+                                    : "text-gray-400 hover:text-[#011749]"
+                            }`}
+                        >
                             Adoption
                         </button>
-                        <button className="text-gray-400 text-xs sm:text-sm font-medium whitespace-nowrap">Foster</button>
-                        <button className="text-gray-400 text-xs sm:text-sm font-medium whitespace-nowrap">Sponsor</button>
+                        <button
+                            onClick={() => { setActiveTab("Foster"); setCurrentPage(1); }}
+                            className={`px-4 sm:px-5 py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+                                activeTab === "Foster"
+                                    ? "bg-[#011749] text-white font-semibold"
+                                    : "text-gray-400 hover:text-[#011749]"
+                            }`}
+                        >
+                            Foster
+                        </button>
+                        <button className="text-gray-400 text-xs sm:text-sm font-medium whitespace-nowrap cursor-not-allowed">Sponsor</button>
                     </div>
 
                     {/* Search */}
@@ -227,8 +250,12 @@ const Request = () => {
 
                                 {/* Type */}
                                 <td>
-                                    <span className="font-inter font-bold tracking-wide text-[#1D4ED8] bg-[#EFF6FF] px-2 py-1 rounded-full">
-                                        ADOPTION
+                                    <span className={`font-inter font-bold tracking-wide px-2 py-1 rounded-full ${
+                                        activeTab === "Foster"
+                                            ? "text-[#047857] bg-[#ECFDF5]"
+                                            : "text-[#1D4ED8] bg-[#EFF6FF]"
+                                    }`}>
+                                        {activeTab === "Foster" ? "FOSTER" : "ADOPTION"}
                                     </span>
                                 </td>
 
@@ -258,9 +285,9 @@ const Request = () => {
                                 </td>
 
                                 {/* Actions */}
-                                <td className="text-center">
-                                    <button className="text-[#011749] text-lg" onClick={() =>
-                                        navigate(`/admin/requests/${item.animalName}`)
+                                <td>
+                                    <button className="text-[#011749] text-lg mx-auto block" onClick={() =>
+                                        navigate(`/admin/requests/${item.animalName}?type=${activeTab === "Foster" ? "Foster" : "Adoption"}`)
                                     }>
                                         <IoEyeOutline />
                                     </button>

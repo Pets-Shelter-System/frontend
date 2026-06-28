@@ -26,9 +26,13 @@ const ProfileLayout = () => {
   };
 
   const activeStyle = {
-    background:
-      "linear-gradient(90deg, rgba(153, 153, 153, 0) 0%, #011749 100%)",
+    background: "linear-gradient(90deg, #F9FAFB 0%, #D1D5DB 0%, #011749 100%)",
+    position: "relative"
   };
+
+  const getActiveIndicator = (isActive) => isActive && (
+    <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full" />
+  );
 
   return (
     <div className="bg-[#F6F7F9] min-h-screen">
@@ -45,17 +49,18 @@ const ProfileLayout = () => {
 
                 return (
                   <div
-                    className={`h-[48px] lg:h-[54px] rounded-full lg:rounded-[16px] px-0 lg:px-5 flex items-center justify-center lg:justify-between transition-all duration-200 ${
-                      isSettingsActive ? "text-white" : "text-[#777] hover:bg-[#F5F5F5]"
+                    className={`h-[48px] lg:h-[54px] rounded-full lg:rounded-[16px] px-0 lg:px-5 flex items-center justify-center lg:justify-between transition-all duration-200 relative overflow-hidden ${
+                      isSettingsActive ? "text-white shadow-md" : "text-[#777] hover:bg-[#F5F5F5]"
                     }`}
                     style={isSettingsActive ? activeStyle : {}}
                     title="Setting"
                   >
+                    {getActiveIndicator(isSettingsActive)}
                     <div className="flex items-center gap-3">
-                      <IoSettingsOutline className="text-[22px]" />
-                      <span className="font-medium hidden lg:block">Setting</span>
+                      <IoSettingsOutline className={`text-[22px] ${isSettingsActive ? "text-white" : "text-gray-400"}`} />
+                      <span className={`font-medium hidden lg:block ${isSettingsActive ? "text-white" : ""}`}>Setting</span>
                     </div>
-                    {isSettingsActive && <IoIosArrowForward className="text-[20px] hidden lg:block" />}
+                    {isSettingsActive && <IoIosArrowForward className="text-[20px] text-white hidden lg:block" />}
                   </div>
                 );
               }}
@@ -64,17 +69,18 @@ const ProfileLayout = () => {
             <NavLink to="/profile/help" className="w-full">
               {({ isActive }) => (
                 <div
-                  className={`h-[48px] lg:h-[54px] rounded-full lg:rounded-[16px] px-0 lg:px-5 flex items-center justify-center lg:justify-between transition-all duration-200 ${
-                    isActive ? "text-white" : "text-[#777] hover:bg-[#F5F5F5]"
+                  className={`h-[48px] lg:h-[54px] rounded-full lg:rounded-[16px] px-0 lg:px-5 flex items-center justify-center lg:justify-between transition-all duration-200 relative overflow-hidden ${
+                    isActive ? "text-white shadow-md" : "text-[#777] hover:bg-[#F5F5F5]"
                   }`}
                   style={isActive ? activeStyle : {}}
                   title="Help & Support"
                 >
+                  {getActiveIndicator(isActive)}
                   <div className="flex items-center gap-3">
-                    <IoIosHelpCircleOutline className="text-[22px]" />
-                    <span className="font-medium hidden lg:block">Help & Support</span>
+                    <IoIosHelpCircleOutline className={`text-[22px] ${isActive ? "text-white" : "text-gray-400"}`} />
+                    <span className={`font-medium hidden lg:block ${isActive ? "text-white" : ""}`}>Help & Support</span>
                   </div>
-                  {isActive && <IoIosArrowForward className="text-[20px] hidden lg:block" />}
+                  {isActive && <IoIosArrowForward className="text-[20px] text-white hidden lg:block" />}
                 </div>
               )}
             </NavLink>

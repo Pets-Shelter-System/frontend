@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import { AuthContext } from "../../components/context/AuthContext";
 import { IoIosSearch, IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
@@ -16,8 +16,20 @@ const AdminOrders = () => {
     const [page, setPage] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [stats, setStats] = useState({ total: 0, revenue: 0, pending: 0 });
+    const [showStatusMenu, setShowStatusMenu] = useState(false);
+    const statusMenuRef = useRef(null);
 
     const pageSize = 10;
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (statusMenuRef.current && !statusMenuRef.current.contains(event.target)) {
+                setShowStatusMenu(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const fetchOrders = async () => {
         setLoading(true);
@@ -27,7 +39,8 @@ const AdminOrders = () => {
                 params: {
                     PageNumber: page,
                     PageSize: pageSize,
-                    // Note: Assuming API supports search/filter as per pattern
+                    Search: search || undefined,
+                    Status: statusFilter || undefined,
                 }
             });
 
@@ -52,7 +65,7 @@ const AdminOrders = () => {
 
     useEffect(() => {
         fetchOrders();
-    }, [page, token]);
+    }, [page, token, search, statusFilter]);
 
     const getStatusStyle = (status) => {
         switch (status) {
@@ -79,7 +92,7 @@ const AdminOrders = () => {
                   onClick={() => navigate(-1)}
                   className="flex items-center gap-2 text-xs font-bold text-[#6F84AE] uppercase tracking-wider mb-2 hover:text-[#011749]"
                 >
-                  <IoIosArrowBack /> Back to Profile
+                  <IoIosArrowBack /> Back
                 </button>
                 <h1 className="text-4xl font-extrabold text-[#011749]">Orders</h1>
                 <p className="text-gray-400 mt-1">Manage medication shipments, diagnostic kit orders, and clinical supplies.</p>
@@ -121,33 +134,66 @@ const AdminOrders = () => {
             </div>
 
             {/* Filters & Search */}
-            <div className="bg-white p-4 rounded-[20px] shadow-sm border border-gray-50 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div className="flex items-center gap-3 bg-[#F6F7F9] px-4 py-2.5 rounded-full w-full md:w-[400px]">
-                    <IoIosSearch size={20} className="text-gray-400" />
+            <div className="bg-white p-4 rounded-[20px] shadow-sm border border-gray-50 mb-6 flex flex-col md:flex-row justify-center items-center gap-4 w-full md:w-fit mx-auto">
+                <div className="flex items-center gap-3 bg-[#F6F7F9] px-4 py-2 rounded-full w-full md:w-[320px]">
+                    <IoIosSearch size={20} className="text-gray-400 flex-shrink-0" />
                     <input 
                         type="text" 
-                        placeholder="Search by ID or customer..." 
+                        placeholder="Search by customer..." 
                         className="bg-transparent outline-none text-sm w-full"
                         value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        onChange={(e) => {
+                            setSearch(e.target.value);
+                            setPage(1);
+                        }}
                     />
                 </div>
 
-                <div className="flex items-center gap-4 w-full md:w-auto">
-                    <select 
-                        className="bg-[#F6F7F9] px-4 py-2.5 rounded-full text-sm outline-none cursor-pointer text-gray-500 font-medium"
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
+                <div className="relative w-full md:w-auto text-left" ref={statusMenuRef}>
+                    <button
+                        onClick={() => setShowStatusMenu(!showStatusMenu)}
+                        className="w-full md:w-auto flex items-center justify-between gap-4 px-5 py-2.5 bg-white border-2 border-[#011749] text-[#011749] rounded-full text-xs font-bold hover:bg-gray-50 transition-all select-none min-w-[150px]"
                     >
-                        <option value="">Status</option>
-                        <option value="Pending">Pending</option>
-                        <option value="PaymentReceived">Payment Received</option>
-                    </select>
-
-                    <div className="flex gap-2 ml-auto">
-                        <button className="p-2.5 rounded-full bg-[#F6F7F9] text-gray-500 hover:bg-gray-100 transition-all"><HiOutlineDownload size={20} /></button>
-                        <button className="p-2.5 rounded-full bg-[#F6F7F9] text-gray-500 hover:bg-gray-100 transition-all"><HiOutlinePrinter size={20} /></button>
-                    </div>
+                        <span>
+                            {statusFilter === "Pending" ? "Pending" :
+                             statusFilter === "PaymentReceived" ? "Payment Received" :
+                             statusFilter === "Shipped" ? "Shipped" :
+                             statusFilter === "Delivered" ? "Delivered" :
+                             statusFilter === "PaymentMismatch" ? "Payment Mismatch" :
+                             "Status"}
+                        </span>
+                        <span className="text-[10px] text-gray-400">
+                            {showStatusMenu ? "▲" : "▼"}
+                        </span>
+                    </button>
+                    {showStatusMenu && (
+                        <div className="absolute right-0 left-0 md:left-auto mt-2 w-full md:w-48 bg-white border border-gray-100 rounded-xl shadow-lg z-20 py-1 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+                            {[
+                                { value: "", label: "Status" },
+                                { value: "Pending", label: "Pending" },
+                                { value: "PaymentReceived", label: "Payment Received" },
+                                { value: "Shipped", label: "Shipped" },
+                                { value: "Delivered", label: "Delivered" },
+                                { value: "PaymentMismatch", label: "Payment Mismatch" },
+                            ].map((opt) => (
+                                <button
+                                    key={opt.value}
+                                    onClick={() => {
+                                        setStatusFilter(opt.value);
+                                        setPage(1);
+                                        setShowStatusMenu(false);
+                                    }}
+                                    className={`w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-blue-50 transition-colors ${
+                                        statusFilter === opt.value
+                                            ? "text-blue-600 bg-blue-50/50"
+                                            : "text-[#011749] opacity-80"
+                                    }`}
+                                >
+                                    {opt.label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
 
