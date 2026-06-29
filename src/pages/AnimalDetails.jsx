@@ -96,7 +96,7 @@ const AnimalDetails = () => {
                             </p>
 
                             {/* Info */}
-                            <div className="space-y-4 text-sm">
+                            <div className="space-y-4 text-sm bg-[#F8F9FB] p-6 rounded-2xl border border-gray-50">
                                 <div className="flex items-center gap-3 text-[#011749]">
                                     <FaCalendarAlt className="text-[#F8B63D]" />
                                     <span className="font-medium">Age:</span>
@@ -121,12 +121,12 @@ const AnimalDetails = () => {
                         </div>
 
                         {/* Buttons */}
-                        <div className="flex gap-4 mt-8">
-                            <button onClick={() => navigate(`/adoption/${id}/adopt-me`)} className="bg-[#011749] text-white px-6 py-2 rounded-full text-sm">
+                         <div className="flex flex-col sm:flex-row gap-4 mt-12">
+                            <button
+                                onClick={() => navigate(`/foster/${id}/foster-me`)}
+                                className="bg-[#011749] text-white px-8 py-3 rounded-full text-sm font-bold hover:scale-[1.02] transition transform active:scale-95 flex-grow text-center"
+                            >
                                 Adopt Me
-                            </button>
-                            <button className="border border-[#011749] px-6 py-2 rounded-full text-sm">
-                                Foster Me
                             </button>
                         </div>
                     </div>

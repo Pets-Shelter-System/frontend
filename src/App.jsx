@@ -45,6 +45,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AddFoster from "./pages/Admin/AddFoster";
 import EditFoster from "./pages/Admin/EditFoster";
+import Sponsor from "./pages/Sponsor";
+import SponsorDetails from "./pages/SponsorDetails";
 
 
 
@@ -75,6 +77,8 @@ function App() {
                   <Route path="/foster" element={<Foster />} />
                   <Route path="/foster/:id" element={<FosterDetails />} />
                   <Route path="/foster/:id/foster-me" element={<FosterMe />} />
+                  <Route path="/sponsor" element={<Sponsor />} />
+                  <Route path="/sponsor/:id" element={<SponsorDetails />} />
 
                   <Route path="/profile" element={<ProfileLayout />}>
                     <Route index element={<Profile />} />

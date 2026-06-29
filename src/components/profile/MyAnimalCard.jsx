@@ -4,16 +4,36 @@ import { useNavigate } from "react-router-dom";
 const MyAnimalCard = ({ animal, type }) => {
   const navigate = useNavigate();
 
-  const imageUrl = animal.photos?.[0]?.imageUrl
-    ? `https://petmarket.runasp.net${animal.photos[0].imageUrl}`
-    : "https://via.placeholder.com/400x300?text=No+Image";
+  const getImageUrl = (animalObj) => {
+    let path = animalObj?.photos?.[0]?.imageUrl;
+    if (!path) {
+      path = animalObj?.imageUrl || 
+             animalObj?.image || 
+             animalObj?.photoUrl || 
+             animalObj?.animalPictureUrl;
+    }
+    
+    if (!path) return "https://via.placeholder.com/400x300?text=No+Image";
+    
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+      return path;
+    }
+    
+    const cleanPath = path.startsWith("/") ? path : `/${path}`;
+    return `https://petmarket.runasp.net${cleanPath}`;
+  };
+
+  const imageUrl = getImageUrl(animal);
 
   return (
-    <div className="bg-white rounded-[28px] overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group p-6 flex flex-col items-center text-center">
-      <div className="aspect-[4/3] w-full overflow-hidden rounded-[20px] bg-gray-50 mb-6">
+    <div className="bg-white rounded-[28px] overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group p-6 flex flex-col items-center text-center w-full max-w-[340px]">
+      <div className="aspect-[4/3] w-full overflow-hidden rounded-[20px] bg-gray-50 mb-6 flex items-center justify-center">
         <img
           src={imageUrl}
           alt={animal.name}
+          onError={(e) => {
+            e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
+          }}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
       </div>

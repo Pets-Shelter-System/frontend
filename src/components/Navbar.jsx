@@ -150,7 +150,7 @@ const Navbar = () => {
         <li><Link to="/shop" className={`px-4 py-1 rounded-full font-medium ${location.pathname === "/shop" ? "bg-login-btn" : ""}`}>Shop</Link></li>
         <li><Link to="/adoption" className={`px-4 py-1 rounded-full font-medium ${location.pathname.startsWith("/adoption") ? "bg-login-btn" : ""}`}>Adopt</Link></li>
         <li><Link to="/foster" className={`px-4 py-1 rounded-full font-medium ${location.pathname.startsWith("/foster") ? "bg-login-btn" : ""}`}>Foster</Link></li>
-        <li><span className="font-medium">Sponsor</span></li>
+        <li><Link to="/sponsor" className={`px-4 py-1 rounded-full font-medium ${location.pathname.startsWith("/sponsor") ? "bg-login-btn" : ""}`}>Sponsor</Link></li>
         <li><span className="font-medium">Contact</span></li>
       </ul>
 
@@ -203,6 +203,7 @@ const Navbar = () => {
         <Link to="/shop" onClick={() => setMenuOpen(false)} className="text-lg text-white">Shop</Link>
         <Link to="/adoption" onClick={() => setMenuOpen(false)} className="text-white text-lg">Adopt</Link>
         <Link to="/foster" onClick={() => setMenuOpen(false)} className="text-white text-lg">Foster</Link>
+        <Link to="/sponsor" onClick={() => setMenuOpen(false)} className="text-white text-lg">Sponsor</Link>
 
         <hr className="w-[90%] border-gray-600" />
 

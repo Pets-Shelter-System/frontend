@@ -380,7 +380,7 @@ const Adoption = () => {
 
                                         <div className="mt-auto flex justify-center">
                                             <button
-                                                onClick={() => navigate(`/foster/${pet.id}`)}
+                                                onClick={() => navigate(`/adoption/${pet.id}`)}
                                                 className="border-2 border-[#011749] text-[#011749] px-6 py-1.5 rounded-full text-sm font-bold hover:bg-[#011749] hover:text-white transition transform active:scale-95"
                                             >
                                                 View Animal

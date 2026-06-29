@@ -4,6 +4,7 @@ import api from "../../API/api";
 import Spinner from "../../components/Spinner";
 import { toast } from "react-hot-toast";
 import MyAnimalCard from "../../components/profile/MyAnimalCard";
+import Pagination from "../../components/Pagination";
 import { useNavigate } from "react-router-dom";
 import { IoPawOutline, IoArrowBack } from "react-icons/io5";
 
@@ -14,6 +15,8 @@ const MyAnimals = () => {
   const [animals, setAnimals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchAnimals = async () => {
     if (!token) return;
@@ -22,21 +25,53 @@ const MyAnimals = () => {
     try {
       const endpoint = tab === "adoption" ? "/Animals/my" : "/FosterAnimals/my";
       const res = await api.get(endpoint, {
+        params: { pageNumber: page, pageSize: 6 },
         headers: { Authorization: `Bearer ${token}` }
       });
-      setAnimals(res.data?.data || res.data || []);
+
+      const rawData = res.data;
+      let list = [];
+      let total = 1;
+
+      if (rawData) {
+        if (rawData.data) {
+          if (Array.isArray(rawData.data)) {
+            list = rawData.data;
+          } else if (rawData.data.items && Array.isArray(rawData.data.items)) {
+            list = rawData.data.items;
+            total = rawData.data.totalPages || 1;
+          } else if (typeof rawData.data === "object") {
+            list = rawData.data.items || rawData.data.animals || [];
+            total = rawData.data.totalPages || 1;
+          }
+        } else if (rawData.items && Array.isArray(rawData.items)) {
+          list = rawData.items;
+          total = rawData.totalPages || 1;
+        } else if (Array.isArray(rawData)) {
+          list = rawData;
+        }
+      }
+
+      setAnimals(list);
+      setTotalPages(total);
     } catch (err) {
       console.error("Failed to fetch animals:", err);
       setError(true);
       toast.error(`Failed to load your ${tab} animals.`);
+      setAnimals([]);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    setPage(1);
+  }, [tab]);
+
+  useEffect(() => {
     fetchAnimals();
-  }, [tab, token]);
+  }, [tab, token, page]);
 
   if (loading) return (
     <div className="min-h-[400px] flex items-center justify-center">
@@ -99,10 +134,13 @@ const MyAnimals = () => {
           </button>
         </div>
       ) : animals.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {animals.map((animal) => (
-            <MyAnimalCard key={animal.id} animal={animal} type={tab} />
-          ))}
+        <div className="space-y-6">
+          <div className="flex flex-wrap justify-center gap-6">
+            {animals.map((animal) => (
+              <MyAnimalCard key={animal.id} animal={animal} type={tab} />
+            ))}
+          </div>
+          <Pagination page={page} setPage={setPage} totalPages={totalPages} />
         </div>
       ) : (
         /* Empty State */

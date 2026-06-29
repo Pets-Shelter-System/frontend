@@ -56,7 +56,7 @@ const FosterDetails = () => {
                     onClick={() => navigate("/foster")}
                     className="bg-[#011749] text-white px-8 py-2 rounded-full font-semibold"
                 >
-                    Back to Search
+                    Back to Foster
                 </button>
             </div>
         </div>
@@ -147,7 +147,6 @@ const FosterDetails = () => {
                             >
                                 Foster Me
                             </button>
-                            {/* secondary button from AnimalDetails reference if exists: and it does in the original but user asked to keep only if AnimalDetails has it. The original had Foster Me as secondary, Adopt Me as Primary. We swap it here for Foster. */}
                         </div>
                     </div>
                 </div>
